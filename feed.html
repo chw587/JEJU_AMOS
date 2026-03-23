@@ -8,7 +8,11 @@
     <meta name="title" content="급변풍정보통합표출시스템">
     <meta name="keywords" content="급변풍정보통합표출시스템">
     <meta name="description" content="급변풍정보통합표출시스템" />
-    <meta name="viewport" content="width=1500">
+    <!-- 1205 -->
+    <!-- <meta name="viewport" content="width=1500"> -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
     <!-- meta name="_csrf" th:content="${_csrf.token}"/ -->
     <!-- meta name="_csrf_header" th:content="${_csrf.headerName}"/ -->
     <link rel="stylesheet" href="css/lib/leaflet.css" type="text/css" />
@@ -18,6 +22,10 @@
     <link rel="stylesheet" href="css/lib/jquery.datetimepicker.min.css" type="text/css" />
     <link rel="stylesheet" href="css/lib/jquery-ui.min.css" type="text/css" />
     <link rel="stylesheet" href="css/light.css" type="text/css" />
+
+    <!-- 1205 -->
+    <link rel="stylesheet" href="./css/responsive.css">
+
     <script src="./js/lib/jquery-3.7.1.min.js"></script>
     <script src="./js/lib/jquery-ui.min.js"></script>
     <script src="./js/lib/jquery.blockUI.js"></script>
@@ -44,11 +52,18 @@
     <script src="./js/aln_com.js"></script>
 
     <style>
-        .modal {
-            height: calc(100% - 65px);
-            margin-top: 65px;
-            display: none;
-            z-index: 404;
+        /* 1119 .modal  삭제 */
+        /* 1119 */
+
+        /* 1208 */
+        /* .wrap {
+            min-width: 1910px;
+        } */
+
+        /* 1208 */
+        .real_num .rwy_title {
+            font-size: 14px;
+            min-height: 25px;
         }
 
         .wind span {
@@ -129,10 +144,11 @@
             font-size: 12px;
         }
 
-        article.real_num.type_s {
+        /* 1208 */
+        /* article.real_num.type_s {
             height: 82%;
             font-size: 25px;
-        }
+        } */
 
         .contents {
             display: flex;
@@ -141,11 +157,12 @@
         }
 
 
-        article.real_num>ul>li.v_wide {
+        /* 1208 */
+        /* article.real_num>ul>li.v_wide {
             height: 80px;
             font-weight: 700;
             font-size: 30px;
-        }
+        } */
 
         .contents.is_hidden {
             display: none;
@@ -165,50 +182,51 @@
         }
     </style>
 
+    <!-- 1208 -->
     <!-- tooltip -->
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const tooltip = document.querySelector('.tooltip');
-            const edrGraph = document.querySelector('.edr_graph');
+        // document.addEventListener('DOMContentLoaded', () => {
+        //     const tooltip = document.querySelector('.tooltip');
+        //     const edrGraph = document.querySelector('.edr_graph');
 
-            let hideTimeout;
+        //     let hideTimeout;
 
-            tooltip.addEventListener('mouseenter', () => {
-                clearTimeout(hideTimeout);
-                edrGraph.style.display = 'flex'; // flex로 보여줘야 내부 배치 유지
-            });
+        //     tooltip.addEventListener('mouseenter', () => {
+        //         clearTimeout(hideTimeout);
+        //         edrGraph.style.display = 'flex'; // flex로 보여줘야 내부 배치 유지
+        //     });
 
-            tooltip.addEventListener('mouseleave', () => {
-                hideTimeout = setTimeout(() => {
-                    if (!edrGraph.matches(':hover')) {
-                        edrGraph.style.display = 'none';
-                    }
-                }, 200);
-            });
+        //     tooltip.addEventListener('mouseleave', () => {
+        //         hideTimeout = setTimeout(() => {
+        //             if (!edrGraph.matches(':hover')) {
+        //                 edrGraph.style.display = 'none';
+        //             }
+        //         }, 200);
+        //     });
 
-            edrGraph.addEventListener('mouseenter', () => {
-                clearTimeout(hideTimeout);
-            });
+        //     edrGraph.addEventListener('mouseenter', () => {
+        //         clearTimeout(hideTimeout);
+        //     });
 
-            edrGraph.addEventListener('mouseleave', () => {
-                edrGraph.style.display = 'none';
-            });
-        });
+        //     edrGraph.addEventListener('mouseleave', () => {
+        //         edrGraph.style.display = 'none';
+        //     });
+        // });
 
 
-        // 윈드프로세스 업앤다운
-        function f_toggleWindProfiler() {
-            const $i = $("#btnToggleWp > i");
-            if ($i.hasClass("ico_down")) {
-                $i.removeClass("ico_down").addClass("ico_up");
-                $("#tWp").hide();
-                $("article.real_num > ul > li").addClass("v_wide");
-            } else {
-                $i.removeClass("ico_up").addClass("ico_down");
-                $("#tWp").show();
-                $("article.real_num > ul > li").removeClass("v_wide");
-            }
-        }
+        // // 윈드프로세스 업앤다운
+        // function f_toggleWindProfiler() {
+        //     const $i = $("#btnToggleWp > i");
+        //     if ($i.hasClass("ico_down")) {
+        //         $i.removeClass("ico_down").addClass("ico_up");
+        //         $("#tWp").hide();
+        //         $("article.real_num > ul > li").addClass("v_wide");
+        //     } else {
+        //         $i.removeClass("ico_up").addClass("ico_down");
+        //         $("#tWp").show();
+        //         $("article.real_num > ul > li").removeClass("v_wide");
+        //     }
+        // }
 
     </script>
 
@@ -221,22 +239,37 @@
 </head>
 
 <body>
-
-    <div class="wrap">
+    <!-- 1208 -->
+    <div class="wrap graph">
         <section class="real_time">
             <!-- header -->
             <div class="header">
-                <!-- 250813 -->
-                <a href="feed.html">
+                <!-- 1208 -->
+                <a href="index.html">
                     <p class="title">제주국제공항 IWIS</p>
                 </a>
                 <div>
                     <p class="runway">RUNWAY : <span id="sRwyMode">AUTO</span></p>
+                    <select id="device_content">
+                        <option value="total">통합</option>
+                        <option value="TDWR">TDWR</option>
+                        <option value="TLDR1">TLDR1</option>
+                        <option value="TLDR2">TLDR2</option>
+                        <option value="LLWAS">LLWAS</option>
+                    </select>
+
+                    <select id="device_content">
+                        <option value="total">그래픽</option>
+                        <option value="TDWR">문숫자</option>
+                        <option value="TLDR1">연직</option>
+                    </select>
+
                     <div class="header_time">
                         <p id="sUtc">(UTC) -</p>
                         <p id="sKst">(KST) -</p>
                     </div>
 
+                    <div class="flex_division"></div>
 
                 </div>
             </div>
@@ -244,9 +277,10 @@
             <!-- content -->
             <div class="container">
                 <!-- main_content -->
-                 <!-- 250925 클래스 추가 -->
+                <!-- 250925 클래스 추가 -->
                 <div class="main_content light" id="aLeft" style="position: relative;">
-                    <section class="plumb_contents"><!-- 아래 정보창 열기 버튼 클릭하여 정보창이 열리는 경우 class=is_info 추가  -->
+                    <section class="plumb_contents" style="position: relative;">
+                        <!-- 아래 정보창 열기 버튼 클릭하여 정보창이 열리는 경우 class=is_info 추가  -->
                         <article class="plumb_map">
                             <!-- 250818 높이 표시 -->
                             <div class="height_area">
@@ -256,47 +290,110 @@
                                     <li>900ft</li>
                                     <li>600ft</li>
                                     <li>300ft</li>
-
                                 </ul>
                             </div>
-                            <article class="wpr_area">
-                                <div class="height_list">
-                                    <h2 class="tit" sty>Height</h2>
-                                    <ul>
-                                        <li>1,500ft</li>
-                                        <li>1,200ft</li>
-                                        <li>900ft</li>
-                                        <li>600ft</li>
-                                        <li>300ft</li>
 
-                                    </ul>
+                            <div>
+                                <article class="wpr_area">
+                                    <div class="height_list">
+                                        <h2 class="tit" sty>Height</h2>
+                                        <ul>
+                                            <li>1,500ft</li>
+                                            <li>1,200ft</li>
+                                            <li>900ft</li>
+                                            <li>600ft</li>
+                                            <li>300ft</li>
+                                        </ul>
+                                    </div>
+
+                                    <div class="wpr_list">
+                                        <h2 class="tit" id="titWpr1">07WPR</h2>
+                                        <ul id="wpr1">
+                                            <li>
+                                                <span><img src="./images/icon/icon_arrow.png" alt="" /></span>
+                                                <span> - </span>
+                                            </li>
+                                            <li>
+                                                <span><img src="./images/icon/icon_arrow.png" alt="" /></span>
+                                                <span> - </span>
+                                            </li>
+                                            <li>
+                                                <span><img src="./images/icon/icon_arrow.png" alt="" /></span>
+                                                <span> - </span>
+                                            </li>
+                                            <li>
+                                                <span><img src="./images/icon/icon_arrow.png" alt="" /></span>
+                                                <span> - </span>
+                                            </li>
+                                            <li>
+                                                <span><img src="./images/icon/icon_arrow.png" alt="" /></span>
+                                                <span> - </span>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </article>
+
+                                <!-- 1208 위치 이동 -->
+                                <div class="tooltip_wrap">
+                                    <div class="edr_graph">
+                                        <div class="graph_list type02">
+                                            <p>EDR (m2/3s-1)</p>
+                                            <ul>
+                                                <li class="level_3">
+                                                    <span>심함</span>
+                                                    <em></em>
+                                                    <span>0.45</span>
+                                                </li>
+                                                <li class="level_2">
+                                                    <span>보통</span>
+                                                    <em></em>
+                                                    <span>0.20</span>
+                                                </li>
+                                                <li class="level_1">
+                                                    <span>약함</span>
+                                                    <em></em>
+                                                    <span>0.20</span>
+                                                </li>
+                                                <li class="level_0">
+                                                    <span>없음</span>
+                                                    <em></em>
+                                                    <span>0.45</span>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                        <!-- <div class="graph_list type02">
+                                            <p>WIND (knot)</p>
+                                        </div> -->
+                                        <div>
+                                            <div class="mba">
+                                                <div style="background-color: #ff0000;">MBA</div>
+                                                <span>Microburst</span>
+                                            </div>
+                                            <div class="wsa">
+                                                <div style="background-color: #FFFF00;">WSA</div>
+                                                <span>Windshear</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- 1208 위치 이동 -->
+                                    <div class="toggle_btn_feed">
+                                        <div class="toggle-labels">
+                                            <span></span>
+                                            <span style="margin-left:40px;"></span>
+                                        </div>
+
+                                        <label class="toggle">
+                                            <input type="checkbox" id="btnRwy2">
+                                            <span class="slider">
+                                                <span class="label-on">R1</span>
+                                                <span class="label-off">R2</span>
+                                            </span>
+                                        </label>
+                                    </div>
                                 </div>
-                                <div class="wpr_list">
-                                    <h2 class="tit" id="titWpr1">07WPR</h2>
-                                    <ul id="wpr1">
-                                        <li>
-                                            <span><img src="./images/icon/icon_arrow.png" alt="" /></span>
-                                            <span> - </span>
-                                        </li>
-                                        <li>
-                                            <span><img src="./images/icon/icon_arrow.png" alt="" /></span>
-                                            <span> - </span>
-                                        </li>
-                                        <li>
-                                            <span><img src="./images/icon/icon_arrow.png" alt="" /></span>
-                                            <span> - </span>
-                                        </li>
-                                        <li>
-                                            <span><img src="./images/icon/icon_arrow.png" alt="" /></span>
-                                            <span> - </span>
-                                        </li>
-                                        <li>
-                                            <span><img src="./images/icon/icon_arrow.png" alt="" /></span>
-                                            <span> - </span>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </article>
+                            </div>
+
                             <div class="airstrip">
                                 <div class="airship_graph">
                                     <article class="airstrip_detail">
@@ -774,13 +871,13 @@
                                             R25
                                         </p>
                                     </div>
-
                                 </div>
 
 
                                 <div id="dModeDisp">과거자료</div>
 
                             </div><!-- //airstrip -->
+
                             <div class="wpr_erd">
                                 <article class="wpr_area type02">
                                     <div class="wpr_list">
@@ -819,7 +916,7 @@
                                         </ul>
                                     </div>
                                 </article>
-                                <div class="edr_list">
+                                <!-- <div class="edr_list">
                                     <p>
                                         <span class="round_tit" id="windType">Wind</span>
                                         <span class="round_tit line_type" id="edrType">EDR</span>
@@ -838,74 +935,22 @@
                                             <span>TDWR</span>
                                         </label>
                                     </p>
-                                </div>
+                                </div> -->
                             </div><!-- //wpr_erd -->
                         </article>
 
 
                     </section>
-                    <div class="tooltip">?</div>
-                    <div class="edr_graph">
-                        <div class="graph_list type02">
-                            <p>EDR (m2/3s-1)</p>
-                            <ul>
-                                <li class="level_3">
-                                    <span>심함</span>
-                                    <em></em>
-                                    <span>0.45</span>
-                                </li>
-                                <li class="level_2">
-                                    <span>보통</span>
-                                    <em></em>
-                                    <span>0.20</span>
-                                </li>
-                                <li class="level_1">
-                                    <span>약함</span>
-                                    <em></em>
-                                    <span>0.20</span>
-                                </li>
-                                <li class="level_0">
-                                    <span>없음</span>
-                                    <em></em>
-                                    <span>0.45</span>
-                                </li>
-                            </ul>
-                        </div>
-                        <div class="graph_list type02">
-                            <p>WIND (knot)</p>
-                            <ul>
+                    <!-- <div class="tooltip">?</div> -->
 
-                            </ul>
-                        </div>
-                        <div class="mba">
-                            <div style="background-color: #ff0000;">MBA</div> <span>Microburst</span>
-                        </div>
-                        <div class="wsa">
-                            <div style="background-color: #FFFF00;">WSA</div> <span>Windshear</span>
-                        </div>
-                    </div>
 
                     <!-- 250908 toggle_btn 수정 -->
-                    <div style="position: absolute; margin: 20px; bottom: 0; align-items: center; text-align:center;">
 
-                        <div class="toggle-labels">
-                            <span></span>
-                            <span style="margin-left:40px;"></span>
-                        </div>
-
-                        <label class="toggle">
-                            <input type="checkbox" id="btnRwy2">
-                            <span class="slider">
-                                <span class="label-on">R1</span>
-                                <span class="label-off">R2</span>
-                            </span>
-                        </label>
-                    </div>
                 </div>
 
                 <!-- right : 정보창 -->
                 <article class="contents" id="aRight"
-                    style="width: 100%; margin: 15px 0 30px 0; padding: 20px 10PX;background-color: #2a2a2a;position: relative;border-radius: 15px 0 0 15px;z-index: 403;">
+                    style="position: relative; width: 45%; margin: 15px 0 30px 0; padding: 20px; padding-right: 0 ;background-color: #2a2a2a;position: relative;border-radius: 15px 0 0 15px;z-index: 403;">
                     <!-- 클릭시 정보창(contents에 class명 is_hidden 추가) 닫힘 / info_contents 에 class명 is_only 추가-->
                     <button type="button" class="btn_s btn_circle btn_darkb" id="btnRightHide" style="left : -40px;"><i
                             class="ico ico_s ico_close">close</i></button>
@@ -924,21 +969,29 @@
 
                             </header>
                             <article class="real_num type_s">
+                                <ul class="rwy_title">
+                                    <li>활주로</li>
+                                    <li>WSA/MBA</li>
+                                    <li>LOSS/GAIN</li>
+                                    <li>위치</li>
+                                    <li>풍향</li>
+                                    <li>풍속</li>
+                                </ul>
                                 <ul class="rwy_info">
                                     <li>07A</li>
+                                    <li></li>
+                                    <li></li>
+                                    <li></li>
+                                    <li>340</li>
+                                    <li>4</li>
+                                </ul>
+                                <ul class="rwy_info alert">
+                                    <li>07A</li>
                                     <li>WSA</li>
-                                    <li>20K+</li>
                                     <li>RWY</li>
-                                    <li>020</li>
-                                    <li>16</li>
-                                </ul>
-                                <ul class="rwy_info alert ">
-                                    <li>rgfa</li>
-                                    <li>dsag</li>
-                                    <li>dag</li>
-                                    <li>adg</li>
-                                    <li>asdg</li>
-                                    <li>adsg</li>
+                                    <li>15K+</li>
+                                    <li>340</li>
+                                    <li>15</li>
                                 </ul>
                                 <ul class="rwy_info alert">
                                     <li>adg</li>
@@ -972,7 +1025,7 @@
                                     <li></li>
                                     <li></li>
                                 </ul>
-                                <ul class="rwy_info alert">
+                                <ul class="rwy_info  alert">
                                     <li>afdg</li>
                                     <li></li>
                                     <li></li>
@@ -1007,6 +1060,12 @@
                                 <col style="width:auto">
                             </colgroup>
                             <thead>
+                                <!-- 260211 희원 -->
+                                <tr class="wind_title">
+                                    <th></th>
+                                    <th>윈드프로파일러</th>
+                                    <th></th>
+                                </tr>
                                 <tr>
                                     <th scope="col">Height</th>
                                     <th scope="col">07WPR</th>
@@ -1087,10 +1146,12 @@
 
                 <!-- sidbar -->
                 <ul class="info_area" style="border-radius: 0 15px 15px 0;">
-                    <!-- 클릭 시 정보창 오픈 -->
-                    <button type="button" class="btn_m btn_circle page_open" id="btnRightShow" style="left: -40px;"><i
+                    <button type="button" class="btn_s btn_circle page_open" id="btnRightShow" style="left: -40px;"><i
                             class="ico ico_m ico_open">open</i></button>
-                    <div class="menu">
+                    <!-- 클릭 시 정보창 오픈 -->
+
+                    <!-- 1208 -->
+                    <!-- <div class="menu">
                         <li><button type="button" class="btn_m btn_circle btn_navy" id="btnAln"
                                 onclick="location.href ='/aln2'">
                                 <i class="ico ico_s ico_01">문숫자로 전환</i>
@@ -1102,7 +1163,7 @@
                         <li><button type="button" class="btn_m btn_circle btn_navy  is_active" id="btnCross"
                                 onclick="location.href ='/cross2'">
                                 <i class="ico ico_s ico_03">연직으로 전환</i></button></li>
-                    </div>
+                    </div> -->
                     <div class="menu_setting">
                         <li id="lVol">
                             <span class="volumn">
@@ -1113,9 +1174,12 @@
                             </span>
                         </li>
                         <li><button type="button" class="btn_m btn_circle" id="btnAlertPause"><i
-                                    class="ico ico_m ico_alraming">임시알람소리 중지</i></button></li>
+                                    class="ico ico_s ico_alraming">임시알람소리 중지</i></button></li>
                         <li><button type="button" class="btn_m btn_circle" id="btnHist"><i
                                     class="ico ico_s ico_05">과거조회자료</i></button></li>
+                        <!-- 희원 0107 -->
+                        <li><button type="button" class="btn_m btn_circle" id="btnBack"><i
+                                    class="ico ico_s ico_back">나가기</i></button></li>
                         <li><a href="#"><button type="button" class="btn_m btn_circle"><i
                                         class="ico ico_s ico_09">설정</i></button></a></li>
                     </div>

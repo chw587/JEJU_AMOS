@@ -95,12 +95,19 @@ function f_initBtns() {
 		$("#aLeft").css("display", "flex");
 		$("#aRight").hide(0, () => {
 			// aRight 사라진 후 실행
+			// 1208
+			$(".tooltip_wrap").css("flex-direction", "row-reverse");
+			$(".tooltip_wrap").css("gap", "15px");
+			$(".toggle_btn_feed").css("align-content", "end")
+			$(".tooltip_wrap").css("left", "0px");
+			$(".tooltip_wrap").css("bottom", "0px");
+			$(".plumb_map > div:nth-child(2)").css("width", "180px")
+
 			$(".info_area").css("border-radius", "15px");
 			$(".wpr_area").css("display", "flex");
 			$(".wpr_erd .edr_list").css("position", "static");
 			// 250818 
 			$(".height_area").css("display", "none");
-
 		});
 	});
 
@@ -110,14 +117,20 @@ function f_initBtns() {
 		$("#aRight").css("display", "flex");
 
 		$("#aLeft").show(0, () => {
+			// 1208
+			$(".tooltip_wrap").css("flex-direction", "column");
+			$(".tooltip_wrap").css("gap", "5px");
+			// $(".toggle_btn_feed").css("margin-top", "0px")
+			$(".tooltip_wrap").css("left", "-40px");
+			$(".tooltip_wrap").css("bottom", "-460px");
+			$(".plumb_map > div:nth-child(2)").css("width", "0")
+
 			$(".info_area").css("border-radius", '0 15px 15px 0', 'important');
 			$(".wpr_area").css("display", "none");
 			$(".wpr_erd .edr_list").css("position", "absolute");
 			// 250818 
 			$(".height_area").css("display", "flex");
-
 		});
-
 	});
 
 

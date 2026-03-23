@@ -8,7 +8,10 @@
     <meta name="title" content="급변풍정보통합표출시스템">
     <meta name="keywords" content="급변풍정보통합표출시스템">
     <meta name="description" content="급변풍정보통합표출시스템" />
-    <meta name="viewport" content="width=1500">
+    <!-- 1208 -->
+    <!-- <meta name="viewport" content="width=1500"> -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
     <!-- meta name="_csrf" th:content="${_csrf.token}"/ -->
     <!-- meta name="_csrf_header" th:content="${_csrf.headerName}"/ -->
     <link rel="stylesheet" href="css/lib/leaflet.css" type="text/css" />
@@ -18,6 +21,10 @@
     <link rel="stylesheet" href="css/lib/jquery.datetimepicker.min.css" type="text/css" />
     <link rel="stylesheet" href="css/lib/jquery-ui.min.css" type="text/css" />
     <link rel="stylesheet" href="css/light.css" type="text/css" />
+
+    <!-- 1208 -->
+    <link rel="stylesheet" href="./css/responsive.css">
+
     <script src="./js/lib/jquery-3.7.1.min.js"></script>
     <script src="./js/lib/jquery-ui.min.js"></script>
     <script src="./js/lib/jquery.blockUI.js"></script>
@@ -63,7 +70,7 @@
         <section class="real_time">
             <!-- header -->
             <div class="header">
-                <!-- 250813 -->
+                <!-- 251205 -->
                 <a href="index.html">
                     <p class="title">제주국제공항 IWIS</p>
                 </a>
@@ -76,6 +83,17 @@
                         <option value="TLDR2">TLDR2</option>
                         <option value="LLWAS">LLWAS</option>
                     </select>
+
+                    <select id="device_content">
+                        <option value="total">그래픽</option>
+                        <option value="TDWR">문숫자</option>
+                        <option value="TLDR1">연직</option>
+                    </select>
+
+                    <div class="header_time">
+                        <p id="sUtc">(UTC) -</p>
+                        <p id="sKst">(KST) -</p>
+                    </div>
 
                     <div class="flex_division"></div>
 
@@ -177,8 +195,9 @@
                 </div>
 
                 <!-- sidebar -->
-                <ul class="info_area">
-                    <div class="menu">
+                 <!-- 1208 -->
+                <ul class="info_area" style="border-radius: 15px;">
+                    <!-- <div class="menu">
                         <li><button type="button" class="btn_m btn_circle btn_navy is_active" id="btnAln"
                                 onclick="location.href ='/aln2'">
                                 <i class="ico ico_s ico_01">문숫자로 전환</i>
@@ -190,7 +209,7 @@
                         <li><button type="button" class="btn_m btn_circle btn_navy" id="btnCross"
                                 onclick="location.href ='/cross2'">
                                 <i class="ico ico_s ico_03">연직으로 전환</i></button></li>
-                    </div>
+                    </div> -->
                     <div class="menu_setting">
                         <li id="lVol">
                             <span class="volumn">
@@ -201,9 +220,12 @@
                             </span>
                         </li>
                         <li><button type="button" class="btn_m btn_circle" id="btnAlertPause"><i
-                                    class="ico ico_m ico_alraming">임시알람소리 중지</i></button></li>
+                                    class="ico ico_s ico_alraming">임시알람소리 중지</i></button></li>
                         <li><button type="button" class="btn_m btn_circle" id="btnHist"><i
                                     class="ico ico_s ico_05">과거조회자료</i></button></li>
+                        <!-- 희원 0107 -->
+                        <li><button type="button" class="btn_m btn_circle" id="btnBack"><i
+                                    class="ico ico_s ico_back">나가기</i></button></li>
                         <li><a href="#"><button type="button" class="btn_m btn_circle"><i
                                         class="ico ico_s ico_09">설정</i></button></a></li>
                     </div>
