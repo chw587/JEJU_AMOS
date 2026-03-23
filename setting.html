@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <meta charset="utf-8" />
+
+    <title>설정 - 급변풍정보통합표출</title>
+    <meta name="title" content="급변풍정보통합표출시스템">
+    <meta name="keywords" content="급변풍정보통합표출시스템">
+    <meta name="description" content="급변풍정보통합표출시스템" />
+    <meta name="viewport" content="width=1500">
+    <!-- meta name="_csrf" th:content="${_csrf.token}"/ -->
+    <!-- meta name="_csrf_header" th:content="${_csrf.headerName}"/ -->
+    <link rel="stylesheet" href="./css/lib/leaflet.css" type="text/css" />
+    <link rel="stylesheet" href="./css/lib/leaflet-velocity.css" type="text/css" />
+    <link rel="stylesheet" href="./css/jid.common.css" type="text/css" />
+    <link rel="stylesheet" href="./css/lib/toastr.min.css" type="text/css" />
+    <link rel="stylesheet" href="./css/lib/jquery.datetimepicker.min.css" type="text/css" />
+    <link rel="stylesheet" href="./css/lib/jquery-ui.min.css" type="text/css" />
+    <script src="./js/lib/jquery-3.7.1.min.js"></script>
+    <script src="./js/lib/jquery-ui.min.js"></script>
+    <script src="./js/lib/jquery.blockUI.js"></script>
+    <script src="./js/lib/plotly.min.js"></script>
+    <script src="./js/lib/toastr.min.js"></script>
+    <script src="./js/lib/shp.js"></script>
+    <script src="./js/lib/leaflet.js"></script>
+    <script src="./js/lib/leaflet.geometryutil.js"></script>
+    <script src="./js/lib/leaflet.rotatedMarkers.js"></script>
+    <script src="./js/lib/leaflet-svg-shape-markers.js"></script>
+    <script src="./js/lib/leaflet.easyprint.min.js"></script>
+    <script src="./js/lib/leaflet.markercluster.js"></script>
+    <script src="./js/lib/leaflet-velocity.min.js"></script>
+    <script src="./js/lib/leaflet.shpfile.js"></script>
+    <script src="./js/lib/moment-with-locales.min.js"></script>
+    <script src="./js/lib/sockjs.min.js"></script>
+    <script src="./js/lib/stomp.min.js"></script>
+    <script src="./js/jid.common.js"></script>
+    <script src="./js/jid.lb.js"></script>
+
+    <script src="./js/setting.js"></script>
+    <meta charset="utf-8" />
+
+    <script src="./js/sestting/mngr.js"></script>
+    <script src="./js/setting/rwyUse.js"></script>
+    <script src="./js/setting/dispRwy.js"></script>
+    <script src="./js/setting/sysSetting.js"></script>
+    <style>
+        .circle-button {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 30px;
+            /* 너비 설정 */
+            height: 30px;
+            /* 높이 설정 */
+            border-radius: 50%;
+            /* 원 모양으로 만들기 */
+            background-color: white;
+            /* 배경색 설정 */
+            color: #FF00FF;
+            /* 글자색 설정 */
+            border: 2px solid #FF00FF;
+            /* 경계선 색상 설정 */
+            font-size: 24px;
+            /* 폰트 크기 설정 */
+            cursor: pointer;
+            /* 마우스 커서 변경 */
+        }
+
+        .line-button {
+            display: block;
+            width: 45%;
+            /* 버튼의 너비 설정 */
+            height: 0;
+            border: none;
+            /* 기본 테두리 제거 */
+            border-top: 2px solid #4CAF50;
+            /* 가로 라인 설정 */
+            margin: 20px 0;
+            /* 위아래 여백 추가 */
+            padding: 0;
+            /* 안쪽 여백 제거 */
+            cursor: pointer;
+            /* 마우스 커서 변경 */
+            background: none;
+            /* 배경색 제거 */
+        }
+    </style>
+    <script>
+        const amosAllowMin = "1000000";
+    </script>
+</head>
+
+<body>
+
+    <div class="wrap">
+        <section class="real_time">
+
+
+            <div class="pop_up type_l" id="lyrPopSetting">
+                <div class="inner">
+                    <ul class="nav" id="settingMenu">
+                        <li class="is_active" id="tabRunwayUse"><a href="#">사용활주로</a></li>
+                        <li id="tabDispRunway"><a href="#">표출활주로</a></li>
+                        <li id="tabSetSys"><a href="#">시스템설정</a></li>
+                        <!--<li><a href="#">관리자</a></li>-->
+                    </ul>
+                    <div class="pop_contents is_active" id="runwayUse">
+
+                        <p class="line" id="rwyUseActive">
+                            <span class="on">AMOS OnLine</span>
+                            <span class="off">OffLine</span>
+                        </p>
+                        <!-- 250819 -->
+                        <div class="runway_area" style="margin-top: 30px;">
+                            <div class="automatic">
+                                <h2 class="sub_tit"><input type="checkbox" name="rwyUseType" id="auto" value="A"><label
+                                        for="auto">AUTOMATIC</label></h2>
+                                <div class="runway_con">
+                                    <ul class="runway_txt">
+                                        <li>07A</li>
+                                        <li>07D</li>
+                                        <li>25A</li>
+                                        <li>25D</li>
+                                        <li>13A</li>
+                                        <li>13D</li>
+                                        <li>31A</li>
+                                        <li>31D</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="manual">
+                                <h2 class="sub_tit"><input type="checkbox" name="rwyUseType" id="manual"
+                                        value="M"><label for="manual">MANUAL</label></h2>
+                                <div class="runway_con">
+                                    <div class="inner">
+                                        <div class="runway_air">
+                                            <button type="button" class="btn_xl btnRwy" name="mainRwy"
+                                                disabled="disabled" value="07">07</button>
+                                            <img src="../images/ariplane.png" alt="airplane" class="airplane">
+                                            <span class="runway_line"></span>
+                                            <button type="button" class="btn_xl btnRwy" name="mainRwy"
+                                                disabled="disabled" value="25">25</button>
+                                        </div>
+                                        <div class="runway_air posi_ab" style="top:10px; left:350px">
+                                            <button type="button" class="btn_xl btnRwy" name="subRwy"
+                                                disabled="disabled" value="13">13</button>
+                                            <span class="runway_line"></span>
+                                            <img src="../images/ariplane.png" alt="airplane" class="airplane">
+                                            <button type="button" class="btn_xl btnRwy" name="subRwy"
+                                                disabled="disabled" value="31">31</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="pop_contents" id="dispRunway">
+                        <div class="both_flex">
+                            <div class="inner">
+                                <h1 class="box_tit"><input type="checkbox" name="dispRwyType" id="ele01"
+                                        value="P" /><label for="ele01">선호 표출</label></h1>
+
+                                <ul class="list_style" id="preFerGrp">
+                                    <li data-rwys="1A,1D,2D"><span class="circle_num">1</span>1A, 1D, 2D</li>
+                                    <li data-rwys="1A,1D"><span class="circle_num">2</span>1A, 1D</li>
+                                    <li data-rwys="1A,1D,2A,2D"><span class="circle_num">3</span>1A, 1D, 2A, 2D</li>
+                                    <li data-rwys="1D,1A,2D"><span class="circle_num">4</span>1D, 1A, 2D</li>
+                                    <li data-rwys="1D,1A"><span class="circle_num">5</span>1D, 1A</li>
+                                    <li data-rwys="1D,1A,2D,2A"><span class="circle_num">6</span>1D, 1A, 2D, 2A</li>
+                                    <li data-rwys="2D"><span class="circle_num">7</span>2D</li>
+                                </ul>
+
+                                <h1 class="box_tit"><input type="checkbox" name="dispRwyType" id="ele02"
+                                        value="M" /><label for="ele02">수동 표출</label></h1>
+
+                                <div class="box_style">
+                                    <div class="inner">
+                                        <div class="box">
+                                            <h2 class="sub_tit_02">전체</h2>
+                                            <ul class="list_scroll" id="manualSlt1">
+                                                <li data-idx="0" data-rwy="07A"><button type="button">07A</button></li>
+                                                <li data-idx="1" data-rwy="07D"><button type="button">07D</button></li>
+                                                <li data-idx="2" data-rwy="25A"><button type="button">25A</button></li>
+                                                <li data-idx="3" data-rwy="25D"><button
+                                                        type="button">25D</button></lidata-idx="0">
+                                                <li data-idx="4" data-rwy="31A"><button type="button">31A</button></li>
+                                                <li data-idx="5" data-rwy="31D"><button type="button">31D</button></li>
+                                                <li data-idx="6" data-rwy="13A"><button type="button">13A</button></li>
+                                                <li data-idx="7" data-rwy="13D"><button type="button">13D</button></li>
+                                            </ul>
+                                        </div>
+                                        <ul class="btn_align">
+                                            <li><button type="button" class="btn_m btn_ico btn_blue"><i
+                                                        class="ico ico_m ico_next">left</i></button></li>
+                                            <li><button type="button" class="btn_m btn_ico btn_blue"><i
+                                                        class="ico ico_m ico_prev">right</i></button></li>
+                                        </ul>
+                                        <div class="box">
+                                            <h2 class="sub_tit_02">선택</h2>
+                                            <ul class="list_scroll" id="manualSlt2">
+                                            </ul>
+                                        </div>
+                                        <ul class="btn_align">
+                                            <li><button type="button" class="btn_m btn_ico btn_blue"><i
+                                                        class="ico ico_m ico_up2">up</i></button></li>
+                                            <li><button type="button" class="btn_m btn_ico btn_blue"><i
+                                                        class="ico ico_m ico_down2">down</i></button></li>
+                                        </ul>
+                                        <ul class="list_scroll" id="hidenClone" style="display:none;">
+                                            <li data-idx="0" data-rwy="07A"><button type="button">07A</button></li>
+                                            <li data-idx="1" data-rwy="07D"><button type="button">07D</button></li>
+                                            <li data-idx="2" data-rwy="25A"><button type="button">25A</button></li>
+                                            <li data-idx="3" data-rwy="25D"><button
+                                                    type="button">25D</button></lidata-idx="0">
+                                            <li data-idx="4" data-rwy="31A"><button type="button">31A</button></li>
+                                            <li data-idx="5" data-rwy="31D"><button type="button">31D</button></li>
+                                            <li data-idx="6" data-rwy="13A"><button type="button">13A</button></li>
+                                            <li data-idx="7" data-rwy="13D"><button type="button">13D</button></li>
+                                        </ul>
+                                    </div>
+                                </div><!-- //box_style -->
+
+                                <div class="btn_area">
+                                    <button type="button" class="btn btn_blue" id="btnDispRwyApply">적용</button>
+                                </div>
+                            </div><!-- //inner -->
+
+                            <div class="inner">
+                                <h1 class="box_tit"><label for="ele01">WIND</label></h1>
+                                <div class="real_num_box">
+                                    <article class="real_num type_s" style="padding: 0; font-size: 30px;">
+                                        <ul class="rwy_info alert">
+                                            <li>art</li>
+                                            <li>f</li>
+                                            <li>gae</li>
+                                            <li>at</li>
+                                            <li>ag</li>
+                                            <li>art</li>
+                                        </ul>
+                                        <ul class="rwy_info alert">
+                                            <li>rgfa</li>
+                                            <li>dsag</li>
+                                            <li>dag</li>
+                                            <li>adg</li>
+                                            <li>asdg</li>
+                                            <li>adsg</li>
+                                        </ul>
+                                        <ul class="rwy_info alert">
+                                            <li>adg</li>
+                                            <li></li>
+                                            <li></li>
+                                            <li></li>
+                                            <li></li>
+                                            <li></li>
+                                        </ul>
+                                        <ul class="rwy_info alert">
+                                            <li>adg</li>
+                                            <li></li>
+                                            <li></li>
+                                            <li></li>
+                                            <li></li>
+                                            <li></li>
+                                        </ul>
+                                        <ul class="rwy_info alert">
+                                            <li>afg</li>
+                                            <li></li>
+                                            <li></li>
+                                            <li></li>
+                                            <li></li>
+                                            <li></li>
+                                        </ul>
+                                        <ul class="rwy_info alert">
+                                            <li>afg</li>
+                                            <li></li>
+                                            <li></li>
+                                            <li></li>
+                                            <li></li>
+                                            <li></li>
+                                        </ul>
+                                        <ul class="rwy_info  alert">
+                                            <li>afdg</li>
+                                            <li></li>
+                                            <li></li>
+                                            <li></li>
+                                            <li></li>
+                                            <li></li>
+                                        </ul>
+                                        <ul class="rwy_info alert">
+                                            <li>afg</li>
+                                            <li></li>
+                                            <li></li>
+                                            <li></li>
+                                            <li></li>
+                                            <li></li>
+                                        </ul>
+                                    </article>
+                                </div>
+                            </div>
+                        </div><!-- //both_flex -->
+                    </div>
+                    <div class="pop_contents" id="setSys">
+
+                        <div class="both_flex">
+                            <div class="inner">
+                                <h1 class="box_tit">공통</h1>
+                                <div class="box_style02">
+                                    <div class="sel_area">
+                                        <label for="sel01">위경도 표출</label>
+                                        <select name="dispLatLonType" id="sel01" class="select_type02">
+                                            <option value="digit">소수점</option>
+                                            <option value="dms">도,분,초</option>
+
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <h1 class="box_tit"><label for="ele01">경고 표출</label></h1>
+                                <div class="box_style02">
+                                    <div class="sel_area">
+                                        <label for="sel02">깜빡임 시간</label>
+                                        <select name="blnkgTm" id="sel02" class="select_type02">
+                                            <option value="2000">2초</option>
+                                            <option value="3000">3초</option>
+                                            <option value="4000">4초</option>
+                                            <option value="5000">5초</option>
+                                            <option value="6000">6초</option>
+                                            <option value="7000">7초</option>
+                                            <option value="8000">8초</option>
+                                            <option value="9000">9초</option>
+                                            <option value="10000">10초</option>
+                                        </select>
+                                    </div>
+                                    <div class="sel_area">
+                                        <label for="sel03">깜빡임 주기</label>
+                                        <select name="blnkgCyc" id="sel03" class="select_type02">
+                                            <option value="500">0.5초</option>
+                                            <option value="1000">1초</option>
+                                            <option value="2000">2초</option>
+                                            <option value="3000">3초</option>
+                                            <option value="4000">4초</option>
+                                            <option value="5000">5초</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <h1 class="box_tit"><label for="ele01">연직</label></h1>
+                                <div class="box_style02">
+                                    <div class="sel_area">
+                                        <label for="sel05">Wind Speed(kt)</label>
+
+                                    </div>
+                                    <div class="sel_area">
+                                        <label for="sel06" style="color:#6969FF">Attention</label>
+                                        <input type="number" name="crossWsAttn" id="sel06" class="input" min="0"
+                                            step="1" />
+                                    </div>
+                                    <div class="sel_area">
+                                        <label for="sel07" style="color:#FFBC4F">Warning&nbsp&nbsp</label>
+                                        <input type="number" name="crossWsWarn" id="sel07" class="input" min="0"
+                                            step="1" />
+                                    </div>
+
+                                    <div class="sel_area">
+                                        <label for="sel08" style="color:#FF8181">Danger&nbsp&nbsp&nbsp&nbsp</label>
+                                        <input type="number" name="crossWsDgr" id="sel08" class="input" min="0"
+                                            step="1" />
+
+                                    </div>
+                                </div>
+
+                            </div><!-- //inner -->
+
+                            <div class="inner">
+                                <h1 class="box_tit">그래픽</h1>
+                                <div class="box_style02">
+                                    <div class="sel_area">
+                                        <label for="sel04">글씨 크기 </label>
+                                        <select name="fontSize">
+                                            <option value="1"> 1 단계</option>
+                                            <option value="2"> 2 단계</option>
+                                            <option value="3"> 3 단계</option>
+                                        </select>
+                                    </div>
+                                    <div class="sel_area">
+                                        <label for="sel04">중첩 자료 투명도(%) </label>
+                                        <input type="number" name="lyrAlpha" id="sel04" class="input" min="0" max="100"
+                                            step="1" />
+                                    </div>
+                                    <div class="palette">
+                                        <table class="paletteT">
+                                            <caption>알람 표출 색상</caption>
+                                            <colgroup>
+                                                <col style="width:auto">
+                                                <col style="width:auto">
+                                                <col style="width:auto">
+                                                <col style="width:auto">
+                                            </colgroup>
+                                            <thead>
+                                                <tr>
+                                                    <th scope="col"></th>
+                                                    <th scope="col">배경색</th>
+                                                    <th scope="col">글씨색</th>
+                                                    <th scope="col">미리보기</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <th scope="row">MBA 색</th>
+                                                    <td><input type="color" name="mbaColorBtn" aria-label="배경색"
+                                                            class="btn_palette" value="#FF4D00" /></td>
+                                                    <td><input type="color" name="mbaColorBtn" aria-label="글자색"
+                                                            class="btn_palette" value="#DDD51D" /></td>
+                                                    <td>
+                                                        <button type="button" name="mbaBackColorPreview"
+                                                            class="btn_palette"
+                                                            style="color:#FF4D00;background-color: #fff;">15K+</button>
+                                                        <button type="button" name="mbaFontColorPreview"
+                                                            class="btn_palette"
+                                                            style="color:#fff;background-color: #FF4D00;">15K+</button>
+                                                    </td>
+
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row">WSA 색</th>
+                                                    <td><input type="color" name="wsaColorBtn" aria-label="배경색"
+                                                            class="btn_palette" value="#FF4D00" /></td>
+                                                    <td><input type="color" name="wsaColorBtn" aria-label="글자색"
+                                                            class="btn_palette" value="#DDD51D" /></td>
+                                                    <td>
+                                                        <button type="button" name="wsaBackColorPreview"
+                                                            class="btn_palette"
+                                                            style="color:#FF4D00;background-color: #fff;">15K+</button>
+                                                        <button type="button" name="wsaFontColorPreview"
+                                                            class="btn_palette"
+                                                            style="color:#fff;background-color: #FF4D00;">15K+</button>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row">Microburst 색</th>
+                                                    <td><input type="color" name="microColorBtn" aria-label="배경색"
+                                                            class="btn_palette" value="#FF00FF" /></td>
+                                                    <td></td>
+                                                    <td>
+                                                        <button type="button" name="microColorPreview"
+                                                            class="circle-button">·</button>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row">Gust Front 색 </th>
+                                                    <td><input type="color" name="gustColorBtn" aria-label="배경색"
+                                                            class="btn_palette" value="#FF4D00" /></td>
+                                                    <td></td>
+                                                    <td>
+                                                        <button type="button" name="gustColorPreview"
+                                                            class="line-button"></button>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+
+                                    </div>
+                                </div><!-- //box_style02 -->
+                                <h1 class="box_tit">초기화</h1>
+                                <div class="box_style02">
+                                    <div class="sel_area lt_al">
+                                        <label for="reset">시스템설정을 기본값으로 변경합니다.</label>
+                                        <button type="button" class="btn btn_blue" name="reset" id="reset">초기화</button>
+                                    </div>
+                                </div>
+                                <div class="btn_area type_right">
+                                    <div class="sel_area rt_al">
+                                        <button type="button" class="btn btn_blue" id="btnSysSettingApply">적용</button>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div><!-- //both_flex -->
+                    </div>
+                    <div class="pop_bot" id="runwayUseBtns">
+                        <button type="button" class="btn btn_blue" id="btnRwyUseApply">적용</button>
+                        <button type="button" class="btn btn_blue" id="btnTopAdmChg">관제탑장 비밀번호 변경</button>
+                    </div>
+
+                    <p class="pop_clo"><button type="button" class="btn_pop_clo" id="btnCloSetting"><i
+                                class="ico ico_m">팝업 닫기</i></button></p>
+                </div>
+            </div>
+
+            <!-- 팝업 -->
+            <div class="pop_up type_s " id="popTopAdmPwd">
+                <div class="inner">
+                    <div class="pop_contents">
+                        <h1 class="pop_tit02">관제탑장 비밀번호</h1>
+                        <ul class="pw_change">
+                            <li>
+                                <input type="password" name="" id="topAdmPwd" placeholder="password" class="input" />
+                            </li>
+                        </ul>
+
+                    </div>
+                    <div class="pop_bot type_full">
+                        <button type="button" class="btn btn_blue" id="btnPopTopAdmPwdLogin">로그인</button>
+                        <button type="button" class="btn btn_darkg" id="btnPopTopAdmPwdCancel">취소</button>
+                    </div>
+                    <p class="pop_clo"><button type="button" class="btn_pop_clo" id="btnPopTopAdmPwdHide"><i
+                                class="ico ico_m">팝업 닫기</i></button></p>
+                </div>
+            </div>
+
+            <!-- 팝업 -->
+            <div class="pop_up type_s" id="popTopAdmPwdChg">
+                <div class="inner">
+                    <div class="pop_contents">
+                        <h1 class="pop_tit02">관제탑장 비밀번호 변경</h1>
+                        <ul class="pw_change">
+                            <li>
+                                <label for="pw">현재비밀번호</label>
+                                <input type="password" name="" id="chgTopAdmPwd" class="input" placeholder="password" />
+                            </li>
+                            <li>
+                                <label for="new_pw">신규비밀번호</label>
+                                <input type="password" name="" id="chgTopAdmPwdNew" class="input"
+                                    placeholder="password" />
+                            </li>
+                            <li>
+                                <label for="new_pw_re">신규 비밀번호 확인</label>
+                                <input type="password" name="" id="chgTopAdmPwdNewRe" class="input"
+                                    placeholder="password" />
+                            </li>
+                        </ul>
+
+                    </div>
+                    <div class="pop_bot type_full">
+                        <button type="button" class="btn btn_blue" id="btnTopAdmPwdChg">변경</button>
+                        <button type="button" class="btn btn_darkg" id="btnTopAdmPwdChgCancel">취소</button>
+                    </div>
+                    <p class="pop_clo"><button type="button" class="btn_pop_clo" id="btnTopAdmPwdChgHide"><i
+                                class="ico ico_m">팝업 닫기</i></button></p>
+                </div>
+            </div>
+
+        </section>
+
+    </div>
+    <input type="hidden" id="iServerNo" value="local" />
+    <input type="hidden" id="iServer1UrlBase" value="http://192.168.5.104:8080" />
+    <input type="hidden" id="iServer2UrlBase" value="http://192.168.5.104:8080" />
+    <input type="hidden" id="url" value="" />
+
+</body>
+
+</html>

@@ -1,0 +1,1156 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <meta charset="utf-8" />
+
+    <title>연직 바람 - 급변풍정보통합표출</title>
+    <meta name="title" content="급변풍정보통합표출시스템">
+    <meta name="keywords" content="급변풍정보통합표출시스템">
+    <meta name="description" content="급변풍정보통합표출시스템" />
+    <meta name="viewport" content="width=1500">
+    <!-- meta name="_csrf" th:content="${_csrf.token}"/ -->
+    <!-- meta name="_csrf_header" th:content="${_csrf.headerName}"/ -->
+    <link rel="stylesheet" href="css/lib/leaflet.css" type="text/css" />
+    <link rel="stylesheet" href="css/lib/leaflet-velocity.css" type="text/css" />
+    <link rel="stylesheet" href="css/jid.common.css" type="text/css" />
+    <link rel="stylesheet" href="css/lib/toastr.min.css" type="text/css" />
+    <link rel="stylesheet" href="css/lib/jquery.datetimepicker.min.css" type="text/css" />
+    <link rel="stylesheet" href="css/lib/jquery-ui.min.css" type="text/css" />
+    <link rel="stylesheet" href="css/light.css" type="text/css" />
+    <script src="./js/lib/jquery-3.7.1.min.js"></script>
+    <script src="./js/lib/jquery-ui.min.js"></script>
+    <script src="./js/lib/jquery.blockUI.js"></script>
+    <script src="./js/lib/plotly.min.js"></script>
+    <script src="./js/lib/toastr.min.js"></script>
+    <script src="./js/lib/shp.js"></script>
+    <script src="./js/lib/leaflet.js"></script>
+    <script src="./js/lib/leaflet.geometryutil.js"></script>
+    <script src="./js/lib/leaflet.rotatedMarkers.js"></script>
+    <script src="./js/lib/leaflet-svg-shape-markers.js"></script>
+    <script src="./js/lib/leaflet.easyprint.min.js"></script>
+    <script src="./js/lib/leaflet.markercluster.js"></script>
+    <script src="./js/lib/leaflet-velocity.min.js"></script>
+    <script src="./js/lib/leaflet.shpfile.js"></script>
+    <script src="./js/lib/moment-with-locales.min.js"></script>
+    <script src="./js/lib/sockjs.min.js"></script>
+    <script src="./js/lib/stomp.min.js"></script>
+    <script src="./js/jid.common.js"></script>
+    <script src="./js/jid.lb.js"></script>
+
+    <script src="./js/cross.js"></script>
+    <meta charset="utf-8" />
+
+    <script src="./js/aln_com.js"></script>
+
+    <style>
+        .modal {
+            height: calc(100% - 65px);
+            margin-top: 65px;
+            display: none;
+            z-index: 404;
+        }
+
+        .wind span {
+            display: flex;
+            justify-content: center;
+        }
+
+        #rVol {
+            display: none;
+        }
+
+        @keyframes blink {
+            0% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
+
+        .blinking {
+            animation: blink var(--blink-duration) step-start infinite;
+        }
+
+        .blinking::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: inherit;
+            /* 부모의 배경을 상속 */
+            opacity: 0;
+        }
+
+
+        #dHistControl {
+            display: none;
+        }
+
+        #btnHistNext {
+            margin-left: 10px;
+        }
+
+        #sAtcpdList {
+            width: 300px;
+        }
+
+        #dModeDisp {
+            position: absolute;
+            bottom: 210px;
+            left: -190px;
+            border: 3px solid red;
+            display: none;
+            z-index: 400;
+            padding: 5px 10px;
+            font-size: 25px;
+            border-radius: 10px;
+            color: white;
+            background-color: rgba(255, 0, 0, 0.8);
+        }
+
+        /* 250818 */
+        .tit_graphic {
+            font-size: 30px;
+        }
+
+        .tit_graphic button {
+            width: 80px;
+            height: 35px;
+            padding: 0;
+            font-size: 12px;
+        }
+
+        article.real_num.type_s {
+            height: 82%;
+            font-size: 25px;
+        }
+
+        .contents {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+
+        article.real_num>ul>li.v_wide {
+            height: 80px;
+            font-weight: 700;
+            font-size: 30px;
+        }
+
+        .contents.is_hidden {
+            display: none;
+            /* 또는 visibility: hidden, opacity: 0 등도 가능 */
+        }
+
+        .wpr_area {
+            display: none;
+        }
+
+        #btnRwy {
+            background-color: #fff;
+        }
+
+        #btnRwy:hover {
+            background-color: #4A7DE0;
+        }
+    </style>
+
+    <!-- tooltip -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const tooltip = document.querySelector('.tooltip');
+            const edrGraph = document.querySelector('.edr_graph');
+
+            let hideTimeout;
+
+            tooltip.addEventListener('mouseenter', () => {
+                clearTimeout(hideTimeout);
+                edrGraph.style.display = 'flex'; // flex로 보여줘야 내부 배치 유지
+            });
+
+            tooltip.addEventListener('mouseleave', () => {
+                hideTimeout = setTimeout(() => {
+                    if (!edrGraph.matches(':hover')) {
+                        edrGraph.style.display = 'none';
+                    }
+                }, 200);
+            });
+
+            edrGraph.addEventListener('mouseenter', () => {
+                clearTimeout(hideTimeout);
+            });
+
+            edrGraph.addEventListener('mouseleave', () => {
+                edrGraph.style.display = 'none';
+            });
+        });
+
+
+        // 윈드프로세스 업앤다운
+        function f_toggleWindProfiler() {
+            const $i = $("#btnToggleWp > i");
+            if ($i.hasClass("ico_down")) {
+                $i.removeClass("ico_down").addClass("ico_up");
+                $("#tWp").hide();
+                $("article.real_num > ul > li").addClass("v_wide");
+            } else {
+                $i.removeClass("ico_up").addClass("ico_down");
+                $("#tWp").show();
+                $("article.real_num > ul > li").removeClass("v_wide");
+            }
+        }
+
+    </script>
+
+
+
+    <script>
+        let rwyType = "R1";
+    </script>
+
+</head>
+
+<body>
+
+    <div class="wrap">
+        <section class="real_time">
+            <!-- header -->
+            <div class="header">
+                <!-- 250813 -->
+                <a href="feed.html">
+                    <p class="title">제주국제공항 IWIS</p>
+                </a>
+                <div>
+                    <p class="runway">RUNWAY : <span id="sRwyMode">AUTO</span></p>
+                    <div class="header_time">
+                        <p id="sUtc">(UTC) -</p>
+                        <p id="sKst">(KST) -</p>
+                    </div>
+
+
+                </div>
+            </div>
+
+            <!-- content -->
+            <div class="container">
+                <!-- main_content -->
+                 <!-- 250925 클래스 추가 -->
+                <div class="main_content light" id="aLeft" style="position: relative;">
+                    <section class="plumb_contents"><!-- 아래 정보창 열기 버튼 클릭하여 정보창이 열리는 경우 class=is_info 추가  -->
+                        <article class="plumb_map">
+                            <!-- 250818 높이 표시 -->
+                            <div class="height_area">
+                                <ul>
+                                    <li>1,500ft</li>
+                                    <li>1,200ft</li>
+                                    <li>900ft</li>
+                                    <li>600ft</li>
+                                    <li>300ft</li>
+
+                                </ul>
+                            </div>
+                            <article class="wpr_area">
+                                <div class="height_list">
+                                    <h2 class="tit" sty>Height</h2>
+                                    <ul>
+                                        <li>1,500ft</li>
+                                        <li>1,200ft</li>
+                                        <li>900ft</li>
+                                        <li>600ft</li>
+                                        <li>300ft</li>
+
+                                    </ul>
+                                </div>
+                                <div class="wpr_list">
+                                    <h2 class="tit" id="titWpr1">07WPR</h2>
+                                    <ul id="wpr1">
+                                        <li>
+                                            <span><img src="./images/icon/icon_arrow.png" alt="" /></span>
+                                            <span> - </span>
+                                        </li>
+                                        <li>
+                                            <span><img src="./images/icon/icon_arrow.png" alt="" /></span>
+                                            <span> - </span>
+                                        </li>
+                                        <li>
+                                            <span><img src="./images/icon/icon_arrow.png" alt="" /></span>
+                                            <span> - </span>
+                                        </li>
+                                        <li>
+                                            <span><img src="./images/icon/icon_arrow.png" alt="" /></span>
+                                            <span> - </span>
+                                        </li>
+                                        <li>
+                                            <span><img src="./images/icon/icon_arrow.png" alt="" /></span>
+                                            <span> - </span>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </article>
+                            <div class="airstrip">
+                                <div class="airship_graph">
+                                    <article class="airstrip_detail">
+                                        <p class="tit">5NM</p>
+                                        <ul class="airstrip_list" id="rwy5nm1">
+                                            <li class="point" data-alt="1500" id="rwy5M1">
+                                                <div class="wind">
+                                                    <strong> - </strong>
+                                                </div>
+                                            </li>
+                                            <li class="point2" data-alt="1200">
+                                                <div class="wind">
+                                                    <strong> - </strong>
+                                                </div>
+                                            </li>
+                                            <li class="point2" data-alt="900">
+                                                <div class="wind">
+                                                    <strong> - </strong>
+                                                </div>
+                                            </li>
+                                            <li class="point2" data-alt="600">
+                                                <div class="wind">
+                                                    <strong> - </strong>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                    </article>
+                                    <article class="airstrip_detail">
+                                        <p class="tit">4NM</p>
+                                        <ul class="airstrip_list" id="rwy4nm1">
+                                            <li class="point2" data-alt="1500">
+                                                <div class="wind">
+                                                    <strong> - </strong>
+                                                </div>
+                                            </li>
+                                            <li class="point" data-alt="1200" id="rwy4M1">
+                                                <div class="wind">
+                                                    <strong> - </strong>
+                                                </div>
+                                            </li>
+                                            <li class="point2" data-alt="900">
+                                                <div class="wind">
+                                                    <strong> - </strong>
+                                                </div>
+                                            </li>
+                                            <li class="point2" data-alt="600">
+                                                <div class="wind">
+                                                    <strong> - </strong>
+                                                </div>
+                                            </li>
+                                            <li class="point2" data-alt="300">
+                                                <div class="wind">
+                                                    <strong> - </strong>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                    </article>
+                                    <article class="airstrip_detail">
+                                        <p class="tit">3NM</p>
+                                        <ul class="airstrip_list" id="rwy3nm1">
+                                            <li class="point2" data-alt="1500" data-ht="450">
+                                                <div class="wind">
+                                                    <strong> - </strong>
+                                                </div>
+                                            </li>
+                                            <li class="point2" data-alt="1200" data-ht="350">
+                                                <div class="wind">
+                                                    <strong> - </strong>
+                                                </div>
+                                            </li>
+                                            <li class="point" data-alt="900" id="rwy3M1" data-ht="300">
+                                                <div class="wind">
+                                                    <strong> - </strong>
+                                                </div>
+                                            </li>
+                                            <li class="point2" data-alt="600" data-ht="200">
+                                                <div class="wind">
+                                                    <strong> - </strong>
+                                                </div>
+                                            </li>
+                                            <li class="point2" data-alt="300" data-ht="100">
+                                                <div class="wind">
+                                                    <strong> - </strong>
+                                                </div>
+                                            </li>
+                                            <li class="point3" data-alt="wpr" id="liWpr07">
+                                                <div class="wind">
+                                                    <span>
+                                                        <svg xmlns="http://www.w3.org/2000/svg" id="Layer_1"
+                                                            data-name="Layer 1" viewBox="0 0 24 24" width="35"
+                                                            height="35">
+                                                             
+                                                            <path fill="white"
+                                                                d="M10,19c0-1.1,.9-2,2-2s2,.9,2,2-.9,2-2,2-2-.9-2-2ZM23.31,7.69c-3.02-3.02-7.04-4.69-11.31-4.69S3.71,4.66,.69,7.69l2.12,2.12c2.46-2.46,5.72-3.81,9.19-3.81s6.74,1.35,9.19,3.81l2.12-2.12Zm-4.95,4.95c-3.51-3.51-9.22-3.51-12.73,0l2.12,2.12c2.34-2.34,6.15-2.34,8.49,0l2.12-2.12Z" />
+                                                        </svg>
+                                                    </span>
+                                                    <strong> 07WPR </strong>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                    </article>
+                                    <article class="airstrip_detail">
+                                        <p class="tit">2NM</p>
+                                        <ul class="airstrip_list" id="rwy2nm1">
+                                            <li class="point2" data-alt="1500">
+                                                <div class="wind">
+                                                    <strong> - </strong>
+                                                </div>
+                                            </li>
+                                            <li class="point2" data-alt="1200">
+                                                <div class="wind">
+                                                    <strong> - </strong>
+                                                </div>
+                                            </li>
+                                            <li class="point2" data-alt="900">
+                                                <div class="wind">
+                                                    <strong> - </strong>
+                                                </div>
+                                            </li>
+                                            <li class="point" data-alt="600" id="rwy2M1">
+                                                <div class="wind">
+                                                    <strong> - </strong>
+                                                </div>
+                                            </li>
+                                            <li class="point2" data-alt="300">
+                                                <div class="wind">
+                                                    <strong> - </strong>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                    </article>
+                                    <article class="airstrip_detail">
+                                        <p class="tit">1NM</p>
+                                        <ul class="airstrip_list" id="rwy1nm1">
+                                            <li class="point2" data-alt="1500">
+                                                <div class="wind">
+                                                    <strong> - </strong>
+                                                </div>
+                                            </li>
+                                            <li class="point2" data-alt="1200">
+                                                <div class="wind">
+                                                    <strong> - </strong>
+                                                </div>
+                                            </li>
+                                            <li class="point2" data-alt="900">
+                                                <div class="wind">
+                                                    <strong> - </strong>
+                                                </div>
+                                            </li>
+                                            <li class="point2" data-alt="600">
+                                                <div class="wind">
+                                                    <strong> - </strong>
+                                                </div>
+                                            </li>
+                                            <li class="point" data-alt="300" id="rwy1M1">
+                                                <div class="wind">
+                                                    <strong> - </strong>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                    </article>
+
+                                    <div class="rwy_list">
+                                        <p class="tit">
+                                            <span>07</span>
+                                            <span>RWY</span>
+                                            <span>25</span>
+                                        </p>
+                                        <ul class="airstrip_list bot" id="Mid-1">
+                                            <li class="point2" data-alt="1500">
+                                                <div class="wind">
+                                                    <strong> - </strong>
+                                                </div>
+                                            </li>
+                                            <li class="point2" data-alt="1200">
+                                                <div class="wind">
+                                                    <strong> - </strong>
+                                                </div>
+                                            </li>
+                                            <li class="point2" data-alt="900">
+                                                <div class="wind">
+                                                    <strong> - </strong>
+                                                </div>
+                                            </li>
+                                            <li class="point2" data-alt="600">
+                                                <div class="wind">
+                                                    <strong> - </strong>
+                                                </div>
+                                            </li>
+                                            <li class="point" data-alt="300">
+                                                <div class="wind">
+                                                    <strong> - </strong>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                        <ul class="airstrip_list bot" id="Mid-2">
+                                            <li class="point2" data-alt="1500">
+                                                <div class="wind">
+                                                    <strong> - </strong>
+                                                </div>
+                                            </li>
+                                            <li class="point2" data-alt="1200">
+                                                <div class="wind">
+                                                    <strong> - </strong>
+                                                </div>
+                                            </li>
+                                            <li class="point2" data-alt="900">
+                                                <div class="wind">
+                                                    <strong> - </strong>
+                                                </div>
+                                            </li>
+                                            <li class="point2" data-alt="600">
+                                                <div class="wind">
+                                                    <strong> - </strong>
+                                                </div>
+                                            </li>
+                                            <li class="point" data-alt="300">
+                                                <div class="wind">
+                                                    <strong> - </strong>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                        <p class="box_airstrip point" id="RWY"></p>
+                                        <p id="test" style="background-color: #ffff;display: none;"></p>
+                                    </div><!-- //rwy_list -->
+
+                                    <article class="airstrip_detail">
+                                        <p class="tit">1NM</p>
+                                        <ul class="airstrip_list type02" id="rwy1nm2">
+                                            <li class="point2" data-alt="1500">
+                                                <div class="wind">
+                                                    <strong> - </strong>
+                                                </div>
+                                            </li>
+                                            <li class="point2" data-alt="1200">
+                                                <div class="wind">
+                                                    <strong> - </strong>
+                                                </div>
+                                            </li>
+                                            <li class="point2" data-alt="900">
+                                                <div class="wind">
+                                                    <strong> - </strong>
+                                                </div>
+                                            </li>
+                                            <li class="point2" data-alt="600">
+                                                <div class="wind">
+                                                    <strong> - </strong>
+                                                </div>
+                                            </li>
+                                            <li class="point" data-alt="300" id="rwy1M2">
+                                                <div class="wind">
+                                                    <strong> - </strong>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                    </article>
+                                    <article class="airstrip_detail">
+                                        <p class="tit">2NM</p>
+                                        <ul class="airstrip_list type02" id="rwy2nm2">
+                                            <li class="point2" data-alt="1500" data-ht="450">
+                                                <div class="wind">
+                                                    <strong> - </strong>
+                                                </div>
+                                            </li>
+                                            <li class="point2" data-alt="1200" data-ht="350">
+                                                <div class="wind">
+                                                    <strong> - </strong>
+                                                </div>
+                                            </li>
+                                            <li class="point2" data-alt="900" data-ht="300">
+                                                <div class="wind">
+                                                    <strong> - </strong>
+                                                </div>
+                                            </li>
+                                            <li class="point" data-alt="600" id="rwy2M2" data-ht="200">
+                                                <div class="wind">
+                                                    <strong> - </strong>
+                                                </div>
+                                            </li>
+                                            <li class="point2" data-alt="300" data-ht="100">
+                                                <div class="wind">
+                                                    <strong> - </strong>
+                                                </div>
+                                            </li>
+                                            <li class="point3" data-alt="wpr" id="liWpr25">
+                                                <div class="wind">
+                                                    <span>
+                                                        <svg xmlns="http://www.w3.org/2000/svg" id="Layer_1"
+                                                            data-name="Layer 1" viewBox="0 0 24 24" width="35"
+                                                            height="35">
+                                                             
+                                                            <path fill="white"
+                                                                d="M10,19c0-1.1,.9-2,2-2s2,.9,2,2-.9,2-2,2-2-.9-2-2ZM23.31,7.69c-3.02-3.02-7.04-4.69-11.31-4.69S3.71,4.66,.69,7.69l2.12,2.12c2.46-2.46,5.72-3.81,9.19-3.81s6.74,1.35,9.19,3.81l2.12-2.12Zm-4.95,4.95c-3.51-3.51-9.22-3.51-12.73,0l2.12,2.12c2.34-2.34,6.15-2.34,8.49,0l2.12-2.12Z" />
+                                                        </svg>
+                                                    </span>
+                                                    <strong> 25WPR </strong>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                    </article>
+                                    <article class="airstrip_detail">
+                                        <p class="tit">3NM</p>
+                                        <ul class="airstrip_list type02" id="rwy3nm2">
+                                            <li class="point2" data-alt="1500">
+                                                <div class="wind">
+                                                    <strong> - </strong>
+                                                </div>
+                                            </li>
+                                            <li class="point2" data-alt="1200">
+                                                <div class="wind">
+                                                    <strong> - </strong>
+                                                </div>
+                                            </li>
+                                            <li class="point" data-alt="900" id="rwy3M2">
+                                                <div class="wind">
+                                                    <strong> - </strong>
+                                                </div>
+                                            </li>
+                                            <li class="point2" data-alt="600">
+                                                <div class="wind">
+                                                    <strong> - </strong>
+                                                </div>
+                                            </li>
+                                            <li class="point2" data-alt="300">
+                                                <div class="wind">
+                                                    <strong> - </strong>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                    </article>
+                                    <article class="airstrip_detail">
+                                        <p class="tit">4NM</p>
+                                        <ul class="airstrip_list type02" id="rwy4nm2">
+                                            <li class="point2" data-alt="1500">
+                                                <div class="wind">
+                                                    <strong> - </strong>
+                                                </div>
+                                            </li>
+                                            <li class="point" data-alt="1200" id="rwy4M2">
+                                                <div class="wind">
+                                                    <strong> - </strong>
+                                                </div>
+                                            </li>
+                                            <li class="point2" data-alt="900">
+                                                <div class="wind">
+                                                    <strong> - </strong>
+                                                </div>
+                                            </li>
+                                            <li class="point2" data-alt="600">
+                                                <div class="wind">
+                                                    <strong> - </strong>
+                                                </div>
+                                            </li>
+                                            <li class="point2" data-alt="300">
+                                                <div class="wind">
+                                                    <strong> - </strong>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                    </article>
+                                    <article class="airstrip_detail">
+                                        <p class="tit">5NM</p>
+                                        <ul class="airstrip_list type02" id="rwy5nm2">
+                                            <li class="point" data-alt="1500" id="rwy5M2">
+                                                <div class="wind">
+                                                    <strong> - </strong>
+                                                </div>
+                                            </li>
+                                            <li class="point2" data-alt="1200">
+                                                <div class="wind">
+                                                    <strong> - </strong>
+                                                </div>
+                                            </li>
+                                            <li class="point2" data-alt="900">
+                                                <div class="wind">
+                                                    <strong> - </strong>
+                                                </div>
+                                            </li>
+                                            <li class="point2" data-alt="600">
+                                                <div class="wind">
+                                                    <strong> - </strong>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                    </article>
+                                </div><!-- //airship_graph -->
+
+                                <div class="r_area">
+                                    <div class="airflight" style="display: flex; justify-content: flex-end;">
+                                        <p class="tit_r07" id="rAreaTit1">
+                                            <img src="./images/icon/icon_airplane.png" alt="right_airplane">
+                                            <span>R07</span>
+                                        </p>
+                                    </div>
+
+                                    <div class="r_list" id="llwas" style="width: 100%;">
+                                        <ul class="llwas">
+                                            <li>
+                                                <strong> - </strong>
+                                            </li>
+                                            <li data-rwytype="R1" data-rsid="009">
+
+                                                <strong> - </strong>
+                                            </li>
+                                            <li data-rwytype="R1" data-rsid="010">
+
+                                                <strong> - </strong>
+                                            </li>
+                                            <li data-rwytype="A" data-rsid="011,002">
+
+                                                <strong> - </strong>
+                                            </li>
+                                            <li data-rwytype="R1" data-rsid="002">
+
+                                                <strong> - </strong>
+                                            </li>
+                                            <li data-rwytype="R2" data-rsid="005">
+
+                                                <strong> - </strong>
+                                            </li>
+                                            <li>
+                                                <strong> - </strong>
+                                            </li>
+                                        </ul>
+                                        <ul
+                                            style="background-image: url(images/road.jpg); padding: 10px;background-position: center center !important;">
+                                            <li class="gray_line" id="llwas3M1"></li>
+                                            <li class="gray_line" id="llwas2M1"></li>
+                                            <li class="gray_line" id="llwas1M1"></li>
+                                            <li class="amos_line" id="amosObs1">
+
+                                                <strong> - </strong>
+                                            </li>
+                                            <li class="amos_line" id="amosObs2">
+
+                                                <strong> - </strong>
+                                            </li>
+                                            <li class="gray_line" id="llwas1M2"></li>
+                                            <li class="gray_line" id="llwas2M2"></li>
+                                            <li class="gray_line" id="llwas3M2"></li>
+                                        </ul>
+                                        <ul class="llwas">
+                                            <li>
+                                                <strong> - </strong>
+                                            </li>
+                                            <li data-rwytype="R1" data-rsid="008">
+
+                                                <strong> - </strong>
+                                            </li>
+                                            <li data-rwytype="A" data-rsid="007,011">
+
+                                                <strong> - </strong>
+                                            </li>
+                                            <li data-rwytype="A" data-rsid="001,001">
+
+                                                <strong> - </strong>
+                                            </li>
+                                            <li data-rwytype="A" data-rsid="004,006">
+
+                                                <strong> - </strong>
+                                            </li>
+                                            <li>
+                                                <strong> - </strong>
+                                            </li>
+                                            <li data-rwytype="R1" data-rsid="003">
+                                                <strong> - </strong>
+                                            </li>
+
+
+                                        </ul>
+                                    </div>
+                                    <div class="airflight">
+                                        <p class="tit_r25" id="rAreaTit2" style="visibility: hidden;">
+                                            <img src="./images/icon/icon_left_airplane.png" alt="left_airplane">
+                                            R25
+                                        </p>
+                                    </div>
+
+                                </div>
+
+
+                                <div id="dModeDisp">과거자료</div>
+
+                            </div><!-- //airstrip -->
+                            <div class="wpr_erd">
+                                <article class="wpr_area type02">
+                                    <div class="wpr_list">
+                                        <h2 class="tit" id="titWpr2">25WPR</h2>
+                                        <ul id="wpr2">
+                                            <li>
+                                                <span><img src="./images/icon/icon_arrow.png" alt="" /></span>
+                                                <span> - </span>
+                                            </li>
+                                            <li>
+                                                <span><img src="./images/icon/icon_arrow.png" alt="" /></span>
+                                                <span> - </span>
+                                            </li>
+                                            <li>
+                                                <span><img src="./images/icon/icon_arrow.png" alt="" /></span>
+                                                <span> - </span>
+                                            </li>
+                                            <li>
+                                                <span><img src="./images/icon/icon_arrow.png" alt="" /></span>
+                                                <span> - </span>
+                                            </li>
+                                            <li>
+                                                <span><img src="./images/icon/icon_arrow.png" alt="" /></span>
+                                                <span> - </span>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <div class="height_list">
+                                        <h2 class="tit">Height</h2>
+                                        <ul>
+                                            <li>1,500ft</li>
+                                            <li>1,200ft</li>
+                                            <li>900ft</li>
+                                            <li>600ft</li>
+                                            <li>300ft</li>
+                                        </ul>
+                                    </div>
+                                </article>
+                                <div class="edr_list">
+                                    <p>
+                                        <span class="round_tit" id="windType">Wind</span>
+                                        <span class="round_tit line_type" id="edrType">EDR</span>
+                                    </p>
+                                    <p class="radio_list" id="radioEdr">
+                                        <label for="sel01" class="radio_type">
+                                            <input type="radio" id="sel01" name="edr" checked />
+                                            <span>07TDLR</span>
+                                        </label>
+                                        <label for="sel02" class="radio_type">
+                                            <input type="radio" id="sel02" name="edr" />
+                                            <span>25TDLR</span>
+                                        </label>
+                                        <label for="sel03" class="radio_type">
+                                            <input type="radio" id="sel03" name="edr" />
+                                            <span>TDWR</span>
+                                        </label>
+                                    </p>
+                                </div>
+                            </div><!-- //wpr_erd -->
+                        </article>
+
+
+                    </section>
+                    <div class="tooltip">?</div>
+                    <div class="edr_graph">
+                        <div class="graph_list type02">
+                            <p>EDR (m2/3s-1)</p>
+                            <ul>
+                                <li class="level_3">
+                                    <span>심함</span>
+                                    <em></em>
+                                    <span>0.45</span>
+                                </li>
+                                <li class="level_2">
+                                    <span>보통</span>
+                                    <em></em>
+                                    <span>0.20</span>
+                                </li>
+                                <li class="level_1">
+                                    <span>약함</span>
+                                    <em></em>
+                                    <span>0.20</span>
+                                </li>
+                                <li class="level_0">
+                                    <span>없음</span>
+                                    <em></em>
+                                    <span>0.45</span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="graph_list type02">
+                            <p>WIND (knot)</p>
+                            <ul>
+
+                            </ul>
+                        </div>
+                        <div class="mba">
+                            <div style="background-color: #ff0000;">MBA</div> <span>Microburst</span>
+                        </div>
+                        <div class="wsa">
+                            <div style="background-color: #FFFF00;">WSA</div> <span>Windshear</span>
+                        </div>
+                    </div>
+
+                    <!-- 250908 toggle_btn 수정 -->
+                    <div style="position: absolute; margin: 20px; bottom: 0; align-items: center; text-align:center;">
+
+                        <div class="toggle-labels">
+                            <span></span>
+                            <span style="margin-left:40px;"></span>
+                        </div>
+
+                        <label class="toggle">
+                            <input type="checkbox" id="btnRwy2">
+                            <span class="slider">
+                                <span class="label-on">R1</span>
+                                <span class="label-off">R2</span>
+                            </span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- right : 정보창 -->
+                <article class="contents" id="aRight"
+                    style="width: 100%; margin: 15px 0 30px 0; padding: 20px 10PX;background-color: #2a2a2a;position: relative;border-radius: 15px 0 0 15px;z-index: 403;">
+                    <!-- 클릭시 정보창(contents에 class명 is_hidden 추가) 닫힘 / info_contents 에 class명 is_only 추가-->
+                    <button type="button" class="btn_s btn_circle btn_darkb" id="btnRightHide" style="left : -40px;"><i
+                            class="ico ico_s ico_close">close</i></button>
+
+                    <article class="real_time_area" style="height: 100%;">
+                        <div class="info_group">
+                            <header class="header_content" style="border: none;">
+                                <div class="tit tit_graphic" id="fHeader">
+                                    <span>CF</span>
+                                    <span>350</span>
+                                    <span>17</span>
+                                    <span>G0</span>
+                                    <span>1349</span>
+                                    <button class="on">ALM <span>ON</span></button>
+                                </div>
+
+                            </header>
+                            <article class="real_num type_s">
+                                <ul class="rwy_info">
+                                    <li>07A</li>
+                                    <li>WSA</li>
+                                    <li>20K+</li>
+                                    <li>RWY</li>
+                                    <li>020</li>
+                                    <li>16</li>
+                                </ul>
+                                <ul class="rwy_info alert ">
+                                    <li>rgfa</li>
+                                    <li>dsag</li>
+                                    <li>dag</li>
+                                    <li>adg</li>
+                                    <li>asdg</li>
+                                    <li>adsg</li>
+                                </ul>
+                                <ul class="rwy_info alert">
+                                    <li>adg</li>
+                                    <li></li>
+                                    <li></li>
+                                    <li></li>
+                                    <li></li>
+                                    <li></li>
+                                </ul>
+                                <ul class="rwy_info alert">
+                                    <li>adg</li>
+                                    <li></li>
+                                    <li></li>
+                                    <li></li>
+                                    <li></li>
+                                    <li></li>
+                                </ul>
+                                <ul class="rwy_info alert">
+                                    <li>afg</li>
+                                    <li></li>
+                                    <li></li>
+                                    <li></li>
+                                    <li></li>
+                                    <li></li>
+                                </ul>
+                                <ul class="rwy_info alert">
+                                    <li>afg</li>
+                                    <li></li>
+                                    <li></li>
+                                    <li></li>
+                                    <li></li>
+                                    <li></li>
+                                </ul>
+                                <ul class="rwy_info alert">
+                                    <li>afdg</li>
+                                    <li></li>
+                                    <li></li>
+                                    <li></li>
+                                    <li></li>
+                                    <li></li>
+                                </ul>
+                                <ul class="rwy_info alert">
+                                    <li>afg</li>
+                                    <li></li>
+                                    <li></li>
+                                    <li></li>
+                                    <li></li>
+                                    <li></li>
+                                </ul>
+                            </article>
+                        </div>
+                    </article>
+
+                    <div class="bottom_area">
+                        <p class="toggle_btn">
+                            <button type="button" id="btnToggleWp">
+                                <i class="ico ico_s ico_down">down</i>
+                            </button>
+                            <!-- <button type="button" class="btn_s btn_circle"><i class="ico ico_s ico_up">up</i></button> -->
+                        </p>
+                        <table class="listT" id="tWp">
+                            <caption>윈드프로파일러</caption>
+                            <colgroup>
+                                <col style="width:auto">
+                                <col style="width:auto">
+                                <col style="width:auto">
+                            </colgroup>
+                            <thead>
+                                <tr>
+                                    <th scope="col">Height</th>
+                                    <th scope="col">07WPR</th>
+                                    <th scope="col">25WPR </th>
+                                </tr>
+                            </thead>
+                            <tbody class="windPro">
+                                <tr>
+                                    <td>1800ft</td>
+                                    <td>
+                                        <p class="arrow_"><img src="./images/icon/icon_arrow.png" alt="방향"></p>
+                                        <span>160/25</span>
+                                    </td>
+                                    <td>
+                                        <p><img src="./images/icon/icon_arrow.png" alt="방향"></p>
+                                        <span>270/25</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>1800ft</td>
+                                    <td>
+                                        <p class="arrow_"><img src="./images/icon/icon_arrow.png" alt="방향"></p>
+                                        <span>160/25</span>
+                                    </td>
+                                    <td>
+                                        <p><img src="./images/icon/icon_arrow.png" alt="방향"></p>
+                                        <span>270/25</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>1800ft</td>
+                                    <td>
+                                        <p class="arrow_"><img src="./images/icon/icon_arrow.png" alt="방향"></p>
+                                        <span>160/25</span>
+                                    </td>
+                                    <td>
+                                        <p><img src="./images/icon/icon_arrow.png" alt="방향"></p>
+                                        <span>270/25</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>1800ft</td>
+                                    <td>
+                                        <p class="arrow_"><img src="./images/icon/icon_arrow.png" alt="방향"></p>
+                                        <span>160/25</span>
+                                    </td>
+                                    <td>
+                                        <p><img src="./images/icon/icon_arrow.png" alt="방향"></p>
+                                        <span>270/25</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>1800ft</td>
+                                    <td>
+                                        <p class="arrow_"><img src="./images/icon/icon_arrow.png" alt="방향"></p>
+                                        <span>160/25</span>
+                                    </td>
+                                    <td>
+                                        <p><img src="./images/icon/icon_arrow.png" alt="방향"></p>
+                                        <span>270/25</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>1800ft</td>
+                                    <td>
+                                        <p class="arrow_"><img src="./images/icon/icon_arrow.png" alt="방향"></p>
+                                        <span>160/25</span>
+                                    </td>
+                                    <td>
+                                        <p><img src="./images/icon/icon_arrow.png" alt="방향"></p>
+                                        <span>270/25</span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div><!-- // bottom_area -->
+                </article>
+
+                <!-- sidbar -->
+                <ul class="info_area" style="border-radius: 0 15px 15px 0;">
+                    <!-- 클릭 시 정보창 오픈 -->
+                    <button type="button" class="btn_m btn_circle page_open" id="btnRightShow" style="left: -40px;"><i
+                            class="ico ico_m ico_open">open</i></button>
+                    <div class="menu">
+                        <li><button type="button" class="btn_m btn_circle btn_navy" id="btnAln"
+                                onclick="location.href ='/aln2'">
+                                <i class="ico ico_s ico_01">문숫자로 전환</i>
+                            </button></li>
+                        <li><button type="button" class="btn_m btn_circle btn_navy" id="btnGraph"
+                                onclick="location.href ='/graph2'">
+                                <i class="ico ico_s ico_02">그래픽으로 전환</i>
+                            </button></li>
+                        <li><button type="button" class="btn_m btn_circle btn_navy  is_active" id="btnCross"
+                                onclick="location.href ='/cross2'">
+                                <i class="ico ico_s ico_03">연직으로 전환</i></button></li>
+                    </div>
+                    <div class="menu_setting">
+                        <li id="lVol">
+                            <span class="volumn">
+                                <input type="range" id="rVol" class="range" orient="vertical" min="0" max="1"
+                                    step="0.05" value="0" />
+                                <button type="button" class="btn_m btn_circle" id="bVol"><i
+                                        class="ico ico_s ico_04">경고볼륨</i></button>
+                            </span>
+                        </li>
+                        <li><button type="button" class="btn_m btn_circle" id="btnAlertPause"><i
+                                    class="ico ico_m ico_alraming">임시알람소리 중지</i></button></li>
+                        <li><button type="button" class="btn_m btn_circle" id="btnHist"><i
+                                    class="ico ico_s ico_05">과거조회자료</i></button></li>
+                        <li><a href="#"><button type="button" class="btn_m btn_circle"><i
+                                        class="ico ico_s ico_09">설정</i></button></a></li>
+                    </div>
+                </ul>
+
+            </div>
+
+            <audio id="aAlert">
+                <source src="/sound/alert.mp3" type="audio/mpeg">
+            </audio>
+            <input type="hidden" id="iWpHeight" value="100,200,300,350,450,550" />
+            <input type="hidden" id="iWpHeightFt" value="300,600,900,1200,1500,1800" />
+            <input type="hidden" id="iAtcpdDelayAllowMin" value="2" />
+            <input type="hidden" id="iWpDelayAllowMin" value="20" />
+            <input type="hidden" id="iHwindDelayAllowMin" value="15" />
+            <input type="hidden" id="iRadarDelayAllowMin" value="10" />
+            <input type="hidden" id="iAtcpdIsUtc" value="Y" />
+            <input type="hidden" id="iWpIsUtc" value="Y" />
+            <input type="hidden" id="iRadarIsUtc" value="Y" />
+            <div class="modal" id="dError">
+                <p class="box_error">서버통신실패</p>
+            </div>
+            <button type="button" class="btn btn_view btn_green" value="combined" style="display:none;">통합</button>
+
+
+        </section>
+
+    </div>
+    <input type="hidden" id="iServerNo" value="1" />
+    <input type="hidden" id="iServer1UrlBase"
+        value="http://192.168.0.250:8887,http://112.160.112.145:8887,http://a.iwis" />
+    <input type="hidden" id="iServer2UrlBase"
+        value="http://192.168.0.250:8887,http://112.160.112.145:8887,http://b.iwis" />
+    <input type="hidden" id="url" value="" />
+
+</body>
+
+</html>

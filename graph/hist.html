@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <meta charset="utf-8" />
+
+    <title>그래프 - 급변풍정보통합표출</title>
+    <meta name="title" content="급변풍정보통합표출시스템">
+    <meta name="keywords" content="급변풍정보통합표출시스템">
+    <meta name="description" content="급변풍정보통합표출시스템" />
+    <meta name="viewport" content="width=1500">
+    <!-- meta name="_csrf" th:content="${_csrf.token}"/ -->
+    <!-- meta name="_csrf_header" th:content="${_csrf.headerName}"/ -->
+    <link rel="stylesheet" href="../css/lib/leaflet.css" type="text/css" />
+    <link rel="stylesheet" href="../css/lib/leaflet-velocity.css" type="text/css" />
+    <link rel="stylesheet" href="../css/jid.common.css" type="text/css" />
+    <link rel="stylesheet" href="../css/lib/toastr.min.css" type="text/css" />
+    <link rel="stylesheet" href="../css/lib/jquery.datetimepicker.min.css" type="text/css" />
+    <link rel="stylesheet" href="../css/lib/jquery-ui.min.css" type="text/css" />
+    <script src="../js/lib/jquery-3.7.1.min.js"></script>
+    <script src="../js/lib/jquery-ui.min.js"></script>
+    <script src="../js/lib/jquery.blockUI.js"></script>
+    <script src="../js/lib/plotly.min.js"></script>
+    <script src="../js/lib/toastr.min.js"></script>
+    <script src="../js/lib/shp.js"></script>
+    <script src="../js/lib/leaflet.js"></script>
+    <script src="../js/lib/leaflet.geometryutil.js"></script>
+    <script src="../js/lib/leaflet.rotatedMarkers.js"></script>
+    <script src="../js/lib/leaflet-svg-shape-markers.js"></script>
+    <script src="../js/lib/leaflet.easyprint.min.js"></script>
+    <script src="../js/lib/leaflet.markercluster.js"></script>
+    <script src="../js/lib/leaflet-velocity.min.js"></script>
+    <script src="../js/lib/leaflet.shpfile.js"></script>
+    <script src="../js/lib/moment-with-locales.min.js"></script>
+    <script src="../js/lib/sockjs.min.js"></script>
+    <script src="../js/lib/stomp.min.js"></script>
+    <script src="../js/jid.common.js?20250718183234"></script>
+    <script src="../js/jid.lb.js?20250718183234"></script>
+
+    <script src="../js/graph/hist.js"></script>
+    <meta charset="utf-8" />
+
+    <style>
+        .modal {
+            height: calc(100% - 65px);
+            margin-top: 65px;
+            display: none;
+            z-index: 1002;
+        }
+
+        .container {
+            padding: 0;
+        }
+
+        #dMap {
+            width: 100%;
+            height: 100%;
+        }
+
+        .position_info,
+        .legend,
+        .color_info,
+        .error_info,
+        .num_info,
+        #dMenuBtnArea {
+            z-index: 1001;
+        }
+
+        #dDrag {
+            position: absolute;
+            left: 1324px;
+            cursor: e-resize;
+            z-index: 1001;
+        }
+
+        #dDispItems {
+            z-index: 1;
+        }
+
+        article.real_num.type_s {
+            font-size: 35px;
+        }
+
+        article.real_num>ul {
+            height: 55px;
+        }
+
+        article.real_num>ul>li.v_wide {
+            height: 80px;
+            font-size: 40px;
+        }
+
+        .svg_wind_bulb {
+            z-index: 2002;
+            position: absolute;
+            top: 100px;
+        }
+
+        .wind-barb-icon {
+            background: none;
+            border: none;
+            display: inline-block;
+        }
+
+        #rVol {
+            display: none;
+        }
+
+        #btnFinishAni {
+            display: none;
+            background-color: #ffa900;
+            margin-left: 12px;
+        }
+
+        .play_range {
+            margin-left: 20px;
+            margin-right: 20px;
+        }
+
+        #sAniTimeTxt {
+            display: none;
+        }
+
+        #pLegend {
+            top: 275px;
+            right: 10px;
+            width: 50px;
+            background-color: rgba(255, 255, 255, 0.4);
+            display: none;
+            padding: 5px;
+        }
+
+        .legend_unit {
+            height: 35px;
+            font-weight: 800;
+        }
+
+        .legend_color_bars {
+            display: flex;
+            align-items: stretch;
+            flex-direction: column;
+            height: calc(100% - 35px);
+        }
+
+        .legend_color_bar {
+            width: 10px;
+            flex-grow: 1;
+            min-height: 25px;
+        }
+
+        .legend_color_bar_text {
+            position: relative;
+            top: -10px;
+            left: 13px;
+            font-size: 14px;
+        }
+
+        .nautical-mile-label {
+            font-size: 16px;
+            font-weight: bolder;
+        }
+
+        #dWpPopup {
+            position: absolute;
+            top: 30px;
+            left: 90px;
+            width: 1000px;
+            height: 1000px;
+            z-index: 2000;
+            border-radius: 10px;
+            background-color: rgba(255, 255, 255, 1);
+            padding: 10px;
+            display: none;
+        }
+
+        #dWpPopup>div.wpp_title {
+            font-size: 18px;
+            font-weight: 600;
+            height: 30px;
+        }
+
+        #dWpPopup>div.wpp_graph {
+            width: 100%;
+            height: calc(100% - 50px);
+        }
+
+        .wpp_graph_windbarb {
+            position: absolute;
+        }
+
+        #dWpPopupClose {
+            position: absolute;
+            right: 30px;
+            font-size: 20px;
+        }
+
+        /* #dMenuBtnArea {
+            width: calc(100% - 80px);
+        } */
+
+        #dHistControl {
+            width: calc(100% - 80px);
+            width: 400px;
+            display: none;
+            z-index: 1003;
+        }
+
+        #dHistControl > div {
+            align-content: center;
+        }
+
+        #btnHistNext {
+            margin-left: 10px;
+        }
+
+        #sAtcpdList {
+            width: 300px;
+        }
+
+        #btnGraph {
+            display: none;
+        }
+
+        .map_label_textonly {
+            background-color: transparent;
+            border: none;
+            box-shadow: none;
+            font-size: 18px;
+            font-weight: 600;
+            -webkit-text-stroke: 0.3px #FFF;
+        }
+
+        .map_arena_alert {
+            z-index: 492;
+        }
+
+        .map_microburst {
+            z-index: 491;
+        }
+
+        .map_rwy_arena {
+            z-index: 490;
+        }
+
+        .map_nm_circle {
+            z-index: 480;
+        }
+
+        .map_amosobs {
+            z-index: 25;
+        }
+
+        .map_wind {
+            z-index: 420;
+        }
+
+        .leaflet-pane.leaflet-overlay-pane>svg.leaflet-zoom-animated {
+            z-index: 30;
+        }
+
+        .leaflet-pane.leaflet-overlay-pane>canvas.velocity-overlay {
+            z-index: 20;
+        }
+
+        .real_time_area {
+            margin-top: 10px;
+        }
+
+        .leaflet-marker-pane {
+            z-index: 400;
+        }
+
+        #tWp span.arrow_ {
+            display: inline-block;
+            width: 35px;
+            text-align: right;
+        }
+
+        #tWp span.wd {
+            display: inline-block;
+            width: 37px;
+            text-align: right;
+        }
+
+        #dModeDisp {
+            position: absolute;
+            bottom: 55px;
+            left: 25px;
+            border: 3px solid red;
+            display: none;
+            z-index: 400;
+            padding: 5px 10px;
+            font-size: 25px;
+            border-radius: 10px;
+            color: white;
+            background-color: rgba(255, 0, 0, 0.8);
+        }
+    </style>
+
+    <script src="../js/graph.js"></script>
+
+    <script src="../js/aln_com.js"></script>
+    <script src="../js/graph.shp.js"></script>
+    <script src="../js/graph.wind.js"></script>
+    <script src="../js/graph.radar.js"></script>
+    <script src="../js/graph.ani.js"></script>
+    <script src="../js/graph.expire.js"></script>
+</head>
+
+<body>
+
+    <div class="wrap">
+        <section class="real_time">
+            <div class="header">
+                <p class="title">제주국제공항 IWIS</p>
+                <div>
+                    <p class="runway">RUNWAY : <span id="sRwyMode">AUTO</span></p>
+                    <select id="device_content">
+                        <option value="total">통합</option>
+                        <option value="TDWR">TDWR</option>
+                        <option value="TLDR1">TLDR1</option>
+                        <option value="TLDR2">TLDR2</option>
+                        <option value="LLWAS">LLWAS</option>
+                    </select>
+
+                    <div class="flex_division"></div>
+
+                </div>
+            </div>
+
+            <div class="container">
+                <div class="main_content" style="margin: 0;border-radius:0; background-color: #242424;">
+                    <div class="contents_map">
+                        <!-- 지도 -->
+                        <article class="map_area d_2" id="aLeft">
+                            <div id="dMap"></div>
+
+                            <ul class="color_info">
+                                <li><button type="button" class="btn_l btn_navy btn_map_color "
+                                        value="color">컬러</button>
+                                </li>
+                                <li><button type="button" class="btn_l btn_navy btn_map_color is_active"
+                                        value="hc">대비</button></li>
+                            </ul>
+
+                            <div class="mode-toggle"
+                                style="position: absolute; bottom: 60px; z-index: 1000; display: none;">
+                                <button type="button" class="toggle-btn active btn_m btn_circle btn_navy"
+                                    data-mode="2D">
+                                    <i class="ico ico_s ico_2d">2D</i>
+                                </button>
+                                <button type="button" class="toggle-btn btn_m btn_circle btn_navy" data-mode="3D">
+                                    <i class="ico ico_s ico_3d">3D</i>
+                                </button>
+                            </div>
+
+                            <p class="error_info"><span class="ico ico_error" id="iEqpError">error</span></p>
+
+                            <ul class="num_info" id="btnNm">
+                                <li><button type="button" class="btn_s btn_navy btn_nm is_active">3</button></li>
+                                <li><button type="button" class="btn_s btn_navy btn_nm">6</button></li>
+                                <li><button type="button" class="btn_s btn_navy btn_nm">32</button></li>
+                                <li><button type="button" class="btn_s btn_navy btn_nm">64</button></li>
+                            </ul>
+
+                            <p class="legend" id="pLegend"></p>
+
+                            <div class="position_info">
+                                <p>
+                                    <span class="box_type" id="sLat">위도 -</span>
+                                    <span class="box_type" id="sLon">경도 -</span>
+                                </p>
+                                <p>
+                                    <span class="box_type">
+                                        <img src="/images/ico_wpr.svg" alt="WPR" />WPR
+                                        <img src="/images/ico_llwas.svg" alt="LLWAS" />LLWAS
+                                        <img src="/images/ico_amos.svg" alt="AMOS" />AMOS
+                                    </span>
+                                </p>
+                            </div>
+
+                        </article>
+
+                        <article class="map_area d_3" id="aLeft">
+                            <div id="dMap"></div>
+
+                            <p class="error_info"><span class="ico ico_error" id="iEqpError">error</span></p>
+
+                            <ul class="num_info" id="btnNm">
+                                <li><button type="button" class="btn_s btn_navy btn_nm is_active">3</button></li>
+                                <li><button type="button" class="btn_s btn_navy btn_nm">6</button></li>
+                                <li><button type="button" class="btn_s btn_navy btn_nm">32</button></li>
+                                <li><button type="button" class="btn_s btn_navy btn_nm">64</button></li>
+                            </ul>
+
+                            <p class="legend" id="pLegend"></p>
+
+                            <div class="position_info">
+                                <p>
+                                    <span class="box_type" id="sLat">위도 -</span>
+                                    <span class="box_type" id="sLon">경도 -</span>
+                                </p>
+                                <p>
+                                    <span class="box_type">
+                                        <img src="./images/icon/icon_wpr.png" alt="WPR" />WPR
+                                        <img src="./images/icon/icon_llwas.png" alt="LLWAS" />LLWAS
+                                        <img src="./images/icon/icon_amos.png" alt="AMOS" />AMOS
+                                    </span>
+                                </p>
+                            </div>
+
+                        </article>
+
+                        <!-- 정보창 -->
+                        <article class="contents" id="aRight">
+                            <!-- 클릭시 정보창(contents에 class명 is_hidden 추가) 닫힘 / info_contents 에 class명 is_only 추가-->
+                            <button type="button" class="btn_s btn_circle btn_darkb" id="btnRightHide"><i
+                                    class="ico ico_s ico_close">close</i></button>
+
+                            <article class="real_time_area">
+                                <div class="info_group">
+                                    <div class="flex_division">
+                                        <details class="details_list" id="dDispItems">
+                                            <summary>표출항목</summary>
+                                            <ul>
+                                                <li>
+                                                    <input type="checkbox" id="cWpr" class="chk_display_item" checked />
+                                                    <label for="cWpr">Wind Profiler</label>
+                                                </li>
+                                                <li>
+                                                    <input type="checkbox" id="cLlwas" class="chk_display_item"
+                                                        checked />
+                                                    <label for="cLlwas">LLWAS</label>
+                                                </li>
+                                                <li>
+                                                    <input type="checkbox" id="cAmos" class="chk_display_item"
+                                                        checked />
+                                                    <label for="cAmos">AMOS</label>
+                                                </li>
+                                                <li>
+                                                    <input type="checkbox" id="cMap" class="chk_display_item" checked />
+                                                    <label for="cMap">지도</label>
+                                                </li>
+                                                <li>
+                                                    <input type="checkbox" id="cArena" class="chk_display_item"
+                                                        checked />
+                                                    <label for="cArena">Arena</label>
+                                                </li>
+                                                <li>
+                                                    <input type="checkbox" id="cFlyRoute" class="chk_display_item"
+                                                        checked />
+                                                    <label for="cFlyRoute">항로</label>
+                                                </li>
+                                                <li>
+                                                    <input type="checkbox" id="cObsCircle" class="chk_display_item"
+                                                        checked />
+                                                    <label for="cObsCircle">관측반경</label>
+                                                </li>
+                                            </ul>
+                                        </details>
+                                        <select id="sProduct">
+                                            <option value="">Product</option>
+                                            <!-- option value="tdwr1">TDWR:반사도</option>
+                                <option value="tdwr2">TDWR:시선속도</option>
+                                <option value="tdwr3">TDWR:수상체</option -->
+                                            <option value="tldr11">TLDR1:SNR</option>
+                                            <option value="tldr12">TLDR1:시선속도</option>
+                                            <option value="tldr21">TLDR2:SNR</option>
+                                            <option value="tldr22">TLDR2:시선속도</option>
+                                        </select>
+                                        <select id="sWind">
+                                            <option value="">Wind</option>
+                                        </select>
+                                    </div>
+                                    <header class="header_content" style="border: none;">
+                                        <div class="tit tit_graphic" id="fHeader">
+                                            <span></span>
+                                            <span></span>
+                                            <span></span>
+                                            <span></span>
+                                            <span></span>
+                                            <button class="on"> <span></span></button>
+                                        </div>
+
+                                    </header>
+                                    <article class="real_num type_s">
+                                        <ul class="rwy_info">
+                                            <li></li>
+                                            <li></li>
+                                            <li></li>
+                                            <li></li>
+                                            <li></li>
+                                            <li></li>
+                                        </ul>
+                                        <ul class="rwy_info">
+                                            <li></li>
+                                            <li></li>
+                                            <li></li>
+                                            <li></li>
+                                            <li></li>
+                                            <li></li>
+                                        </ul>
+                                        <ul class="rwy_info">
+                                            <li></li>
+                                            <li></li>
+                                            <li></li>
+                                            <li></li>
+                                            <li></li>
+                                            <li></li>
+                                        </ul>
+                                        <ul class="rwy_info">
+                                            <li></li>
+                                            <li></li>
+                                            <li></li>
+                                            <li></li>
+                                            <li></li>
+                                            <li></li>
+                                        </ul>
+                                        <ul class="rwy_info">
+                                            <li></li>
+                                            <li></li>
+                                            <li></li>
+                                            <li></li>
+                                            <li></li>
+                                            <li></li>
+                                        </ul>
+                                        <ul class="rwy_info">
+                                            <li></li>
+                                            <li></li>
+                                            <li></li>
+                                            <li></li>
+                                            <li></li>
+                                            <li></li>
+                                        </ul>
+                                        <ul class="rwy_info">
+                                            <li></li>
+                                            <li></li>
+                                            <li></li>
+                                            <li></li>
+                                            <li></li>
+                                            <li></li>
+                                        </ul>
+                                        <ul class="rwy_info">
+                                            <li></li>
+                                            <li></li>
+                                            <li></li>
+                                            <li></li>
+                                            <li></li>
+                                            <li></li>
+                                        </ul>
+                                    </article>
+                                </div>
+                            </article>
+
+                            <div class="bottom_area">
+                                <p class="toggle_btn">
+                                    <button type="button" id="btnToggleWp">
+                                        <i class="ico ico_s ico_down">down</i>
+                                    </button>
+                                    <!-- <button type="button" class="btn_s btn_circle"><i class="ico ico_s ico_up">up</i></button> -->
+                                </p>
+                                <table class="listT" id="tWp">
+                                    <caption>윈드프로파일러</caption>
+                                    <colgroup>
+                                        <col style="width:auto" />
+                                        <col style="width:auto" />
+                                        <col style="width:auto" />
+                                    </colgroup>
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Height</th>
+                                            <th scope="col" id="tWp07">07WPR</th>
+                                            <th scope="col" id="tWp25">25WPR </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>1800ft</td>
+                                            <td>-</td>
+                                            <td>-</td>
+                                        </tr>
+                                        <tr>
+                                            <td>1800ft</td>
+                                            <td>-</td>
+                                            <td>-</td>
+                                        </tr>
+                                        <tr>
+                                            <td>1800ft</td>
+                                            <td>-</td>
+                                            <td>-</td>
+                                        </tr>
+                                        <tr>
+                                            <td>1800ft</td>
+                                            <td>-</td>
+                                            <td>-</td>
+                                        </tr>
+                                        <tr>
+                                            <td>1800ft</td>
+                                            <td>-</td>
+                                            <td>-</td>
+                                        </tr>
+                                        <tr>
+                                            <td>1800ft</td>
+                                            <td>-</td>
+                                            <td>-</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+                                <footer class="play_footer">
+                                    <div class="time_bar">
+                                        <div class="ply_btn">
+                                            <button type="button" class="btn prev" id="btnPrev" disabled>이전</button>
+                                            <button type="button" class="btn play on" id="btnPlay">재생</button>
+                                            <button type="button" class="btn next" id="btnNext" disabled>다음</button>
+                                        </div>
+                                        <div class="inner">
+                                            <div class="time" style="top:-15px;left:0;" id="sAniTimeTxt">13:20</div>
+                                            <input type="range" class="play_range" id="rAni" min="0" max="59" value="0"
+                                                orient="column" disabled>
+                                            <span class="time_txt" id="sAniEndTimeTxt"></span>
+                                        </div>
+                                        <div>
+                                            <button type="button" class="btn" id="btnFinishAni">동화종료</button>
+                                        </div>
+                                    </div>
+                                </footer>
+                            </div><!-- // bottom_area -->
+                        </article><!-- //contents -->
+
+                        <!-- 클릭 시 정보창 오픈 -->
+                        <button type="button" class="btn_m btn_circle page_open" id="btnRightShow" style="display: none;"><i
+                                class="ico ico_m ico_open">open</i></button>
+
+                    </div>
+                </div>
+
+                <ul class="info_area" style="border-radius: 0 15px 15px 0;">
+                    <div class="menu">
+                        <li><button type="button" class="btn_m btn_circle btn_navy" id="btnAln">
+                                <a href="../index.html"><i class="ico ico_s ico_01">문숫자로 전환</i></a>
+                            </button></li>
+                        <li><button type="button" class="btn_m btn_circle btn_navy is_active" id="btnGraph" style="position: relative;z-index: 10000;">
+                                <a href="../graphic.html"><i class="ico ico_s ico_02">그래픽으로 전환</i></a>
+                            </button></li>
+                        <li><button type="button" class="btn_m btn_circle btn_navy" id="btnCross">
+                                <a href="../feed.html"><i class="ico ico_s ico_03">연직으로 전환</i></a></button></li>
+                    </div>
+                    <div class="menu_setting">
+                        <li id="lVol">
+                            <span class="volumn">
+                                <input type="range" id="rVol" class="range" orient="vertical" min="0" max="1"
+                                    step="0.05" value="0" />
+                                <button type="button" class="btn_m btn_circle" id="bVol"><i
+                                        class="ico ico_s ico_04">경고볼륨</i></button>
+                            </span>
+                        </li>
+                        <li><button type="button" class="btn_m btn_circle" id="btnAlertPause"><i
+                                    class="ico ico_m ico_alraming">임시알람소리 중지</i></button></li>
+                        <li><button type="button" class="btn_m btn_circle" id="btnHist"><i
+                                    class="ico ico_s ico_05">과거조회자료</i></button></li>
+                        <li><a href="#"><button type="button" class="btn_m btn_circle"><i
+                                        class="ico ico_s ico_09">설정</i></button></a></li>
+                    </div>
+                </ul>
+
+
+
+            </div>
+
+            <div class="info_contents" id="dMenuBtnArea">
+                <div id="dHistControl">
+                    <div>
+                        <select id="sAtcpdList"></select>
+                    </div>
+                    <div>
+                        <button type="button" class="btn btn_blue" id="btnHistNext">◀</button>
+                        <button type="button" class="btn btn_blue" id="btnHistPrev">▶</button>
+                    </div>
+                </div>
+
+            </div><!-- //info_contents -->
+
+            <input type="hidden" value="2" />
+            <input type="hidden" id="iAmosObsDelayAllowMin" value="10" />
+            <input type="hidden" id="iAtcpdDelayAllowMin" value="2" />
+            <input type="hidden" id="iAtcpdIsUtc" value="Y" />
+            <input type="hidden" id="iOsmUrl" value="http://192.168.0.250:8888/tile/{z}/{x}/{y}.png" />
+            <input type="hidden" id="iOsmContrastUrl" value="http://192.168.0.250:8889/tile/{z}/{x}/{y}.png" />
+            <input type="hidden" id="iWpHeight" value="100,200,300,350,450,550" />
+            <input type="hidden" id="iWpHeightFt" value="300,600,900,1200,1500,1800" />
+            <input type="hidden" id="iWpDelayAllowMin" value="20" />
+            <input type="hidden" id="iWpIsUtc" value="Y" />
+            <input type="hidden" id="iGraphWindFt" value="300,600,900,1200,1500,1800" />
+
+            <input type="hidden" id="iHwindSwLat" value="33.34" />
+            <input type="hidden" id="iHwindSwLon" value="126.31" />
+            <input type="hidden" id="iHwindDxdyDegree" value="0.0056667" />
+            <input type="hidden" id="iHwindNx" value="60" />
+            <input type="hidden" id="iHwindNy" value="60" />
+            <input type="hidden" id="iHwindDelayAllowMin" value="15" />
+
+            <input type="hidden" id="iRadarDelayAllowMin" value="10" />
+            <input type="hidden" id="iRadarIsUtc" value="Y" />
+            <input type="hidden" id="iRadarUpdateRandDelaySec" value="2" />
+
+            <input type="hidden" id="iTrueNorthOffset" value="8" />
+
+            <div class="modal" id="dError">
+                <p class="box_error">서버통신실패</p>
+            </div>
+
+            <div id="dWpPopup">
+                <div class="wpp_title"><span></span><button id="dWpPopupClose">X</button></div>
+                <div class="wpp_graph"><canvas></canvas></div>
+            </div>
+
+            <div id="dModeDisp">과거자료</div>
+
+
+
+        </section>
+
+    </div>
+    <input type="hidden" id="iServerNo" value="1" />
+    <input type="hidden" id="iServer1UrlBase"
+        value="http://192.168.0.250:8887,http://112.160.112.145:8887,http://a.iwis" />
+    <input type="hidden" id="iServer2UrlBase"
+        value="http://192.168.0.250:8887,http://112.160.112.145:8887,http://b.iwis" />
+    <input type="hidden" id="url" value="" />
+
+</body>
+
+</html>

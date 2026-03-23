@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <meta charset="utf-8" />
+
+    <title>문숫자 - 급변풍정보통합표출</title>
+    <meta name="title" content="급변풍정보통합표출시스템">
+    <meta name="keywords" content="급변풍정보통합표출시스템">
+    <meta name="description" content="급변풍정보통합표출시스템" />
+    <meta name="viewport" content="width=1500">
+    <!-- meta name="_csrf" th:content="${_csrf.token}"/ -->
+    <!-- meta name="_csrf_header" th:content="${_csrf.headerName}"/ -->
+    <link rel="stylesheet" href="css/lib/leaflet.css" type="text/css" />
+    <link rel="stylesheet" href="css/lib/leaflet-velocity.css" type="text/css" />
+    <link rel="stylesheet" href="css/jid.common.css" type="text/css" />
+    <link rel="stylesheet" href="css/lib/toastr.min.css" type="text/css" />
+    <link rel="stylesheet" href="css/lib/jquery.datetimepicker.min.css" type="text/css" />
+    <link rel="stylesheet" href="css/lib/jquery-ui.min.css" type="text/css" />
+    <link rel="stylesheet" href="css/light.css" type="text/css" />
+    <script src="./js/lib/jquery-3.7.1.min.js"></script>
+    <script src="./js/lib/jquery-ui.min.js"></script>
+    <script src="./js/lib/jquery.blockUI.js"></script>
+    <script src="./js/lib/plotly.min.js"></script>
+    <script src="./js/lib/toastr.min.js"></script>
+    <script src="./js/lib/shp.js"></script>
+    <script src="./js/lib/leaflet.js"></script>
+    <script src="./js/lib/leaflet.geometryutil.js"></script>
+    <script src="./js/lib/leaflet.rotatedMarkers.js"></script>
+    <script src="./js/lib/leaflet-svg-shape-markers.js"></script>
+    <script src="./js/lib/leaflet.easyprint.min.js"></script>
+    <script src="./js/lib/leaflet.markercluster.js"></script>
+    <script src="./js/lib/leaflet-velocity.min.js"></script>
+    <script src="./js/lib/leaflet.shpfile.js"></script>
+    <script src="./js/lib/moment-with-locales.min.js"></script>
+    <script src="./js/lib/sockjs.min.js"></script>
+    <script src="./js/lib/stomp.min.js"></script>
+    <script src="./js/jid.common.js"></script>
+    <script src="./js/jid.lb.js"></script>
+    <!-- <script src="js/jid.lb.js"></script> -->
+
+    <script src="./js/aln.js"></script>
+    <meta charset="utf-8" />
+
+    <style>
+        .modal {
+            height: 100%;
+            display: none;
+        }
+
+        #rVol {
+            display: none;
+        }
+    </style>
+    <script src="./js/aln_com.js"></script>
+
+
+</head>
+
+<body>
+
+    <div class="wrap">
+        <section class="real_time">
+            <!-- header -->
+            <div class="header">
+                <!-- 250813 -->
+                <a href="index.html">
+                    <p class="title">제주국제공항 IWIS</p>
+                </a>
+                <div>
+                    <p class="runway">RUNWAY : <span id="sRwyMode">AUTO</span></p>
+                    <select id="device_content">
+                        <option value="total">통합</option>
+                        <option value="TDWR">TDWR</option>
+                        <option value="TLDR1">TLDR1</option>
+                        <option value="TLDR2">TLDR2</option>
+                        <option value="LLWAS">LLWAS</option>
+                    </select>
+
+                    <div class="flex_division"></div>
+
+                </div>
+            </div>
+
+            <!-- content -->
+            <div class="container">
+
+                <!-- main_content -->
+                 <!-- 250925 클래스 추가 -->
+                <div class="main_content light">
+                    <header class="header_content">
+                        <p><img src="./images/warning.png" id="iEqpError" class="d_none" /></p>
+                        <div class="tit" id="fHeader">
+                            <span>CF</span>
+                            <span>350</span>
+                            <span>17</span>
+                            <span>G0</span>
+                            <span>1349</span>
+                            <button class="on">ALM <span>ON</span></button>
+                        </div>
+
+                    </header>
+                    <article class="real_num">
+                        <ul class="rwy_title">
+                            <li>활주로</li>
+                            <li>WSA/MBA</li>
+                            <li>LOSS/GAIN</li>
+                            <li>위치</li>
+                            <li>풍향</li>
+                            <li>풍속</li>
+                        </ul>
+                        <ul class="rwy_info alert">
+                            <li>안녕</li>
+                            <li>하</li>
+                            <li>122</li>
+                            <li>231</li>
+                            <li>323</li>
+                            <li>234</li>
+                        </ul>
+                        <ul class="rwy_info alert">
+                            <li>안녕</li>
+                            <li>F</li>
+                            <li>F</li>
+                            <li>D</li>
+                            <li>S</li>
+                            <li>G</li>
+                        </ul>
+                        <ul class="rwy_info">
+                            <li>1</li>
+                            <li>F</li>
+                            <li>A</li>
+                            <li>H</li>
+                            <li>C</li>
+                            <li>W</li>
+                        </ul>
+                        <ul class="rwy_info">
+                            <li>dfg</li>
+                            <li>dcg</li>
+                            <li></li>
+                            <li></li>
+                            <li></li>
+                            <li></li>
+                        </ul>
+                        <ul class="rwy_info">
+                            <li>tfe</li>
+                            <li></li>
+                            <li></li>
+                            <li></li>
+                            <li></li>
+                            <li></li>
+                        </ul>
+                        <ul class="rwy_info">
+                            <li>retffe</li>
+                            <li></li>
+                            <li></li>
+                            <li></li>
+                            <li></li>
+                            <li></li>
+                        </ul>
+                        <ul class="rwy_info">
+                            <li>retfr</li>
+                            <li></li>
+                            <li></li>
+                            <li></li>
+                            <li></li>
+                            <li></li>
+                        </ul>
+                        <ul class="rwy_info alert">
+                            <li>rtf</li>
+                            <li></li>
+                            <li></li>
+                            <li></li>
+                            <li></li>
+                            <li></li>
+                        </ul>
+                    </article>
+                </div>
+
+                <!-- sidebar -->
+                <ul class="info_area">
+                    <div class="menu">
+                        <li><button type="button" class="btn_m btn_circle btn_navy is_active" id="btnAln"
+                                onclick="location.href ='/aln2'">
+                                <i class="ico ico_s ico_01">문숫자로 전환</i>
+                            </button></li>
+                        <li><button type="button" class="btn_m btn_circle btn_navy" id="btnGraph"
+                                onclick="location.href ='/graph2'">
+                                <i class="ico ico_s ico_02">그래픽으로 전환</i>
+                            </button></li>
+                        <li><button type="button" class="btn_m btn_circle btn_navy" id="btnCross"
+                                onclick="location.href ='/cross2'">
+                                <i class="ico ico_s ico_03">연직으로 전환</i></button></li>
+                    </div>
+                    <div class="menu_setting">
+                        <li id="lVol">
+                            <span class="volumn">
+                                <input type="range" id="rVol" class="range" orient="vertical" min="0" max="1"
+                                    step="0.05" value="0" />
+                                <button type="button" class="btn_m btn_circle" id="bVol"><i
+                                        class="ico ico_s ico_04">경고볼륨</i></button>
+                            </span>
+                        </li>
+                        <li><button type="button" class="btn_m btn_circle" id="btnAlertPause"><i
+                                    class="ico ico_m ico_alraming">임시알람소리 중지</i></button></li>
+                        <li><button type="button" class="btn_m btn_circle" id="btnHist"><i
+                                    class="ico ico_s ico_05">과거조회자료</i></button></li>
+                        <li><a href="#"><button type="button" class="btn_m btn_circle"><i
+                                        class="ico ico_s ico_09">설정</i></button></a></li>
+                    </div>
+                </ul>
+            </div>
+
+
+            <audio id="aAlert">
+                <source src="/sound/alert.mp3" type="audio/mpeg">
+            </audio>
+
+            <div class="modal" id="dError">
+                <p class="box_error">서버통신실패</p>
+            </div>
+            <input type="hidden" id="iAtcpdDelayAllowMin" value="2" />
+            <input type="hidden" id="iWpDelayAllowMin" value="20" />
+            <input type="hidden" id="iHwindDelayAllowMin" value="15" />
+            <input type="hidden" id="iRadarDelayAllowMin" value="10" />
+            <input type="hidden" id="iAtcpdIsUtc" value="Y" />
+            <input type="hidden" id="iWpIsUtc" value="Y" />
+            <input type="hidden" id="iRadarIsUtc" value="Y" />
+
+        </section>
+
+    </div>
+    <input type="hidden" id="iServerNo" value="1" />
+    <input type="hidden" id="iServer1UrlBase"
+        value="http://192.168.0.250:8887,http://112.160.112.145:8887,http://a.iwis" />
+    <input type="hidden" id="iServer2UrlBase"
+        value="http://192.168.0.250:8887,http://112.160.112.145:8887,http://b.iwis" />
+    <input type="hidden" id="url" value="" />
+
+</body>
+
+</html>
