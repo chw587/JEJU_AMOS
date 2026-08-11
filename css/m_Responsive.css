@@ -1,0 +1,50 @@
+/* Mobile */
+@media (min-width: 576px) {}
+
+/* Tablet */
+@media (max-width: 768px) {
+    .header {
+        padding: 10px 20px;
+    }
+
+    .header .title {
+        font-size: 0 !important;
+    }
+
+    .header .title::after {
+        content: "IWIS" !important;
+        font-size: 30px !important;
+    }
+
+    .info_area {
+        border-radius: 15px !important;
+        padding: 8px !important;
+        margin: 0 20px 10px 20px !important;
+    }
+
+    .contents_map {
+        position: relative !important;
+    }
+
+    .contents_map .contents {
+        position: absolute !important;
+        width: 100% !important;
+        bottom: -93%;
+        margin: 0 !important;
+        border-radius: 32px 32px 0 0 !important;
+        box-shadow: 0 -7px 20px rgba(0, 0, 0, 0.05) !important;
+        padding: 40px 20px 60px 20px !important;
+        transition: bottom .3s ease;
+
+        touch-action: none;
+        cursor: grab;
+    }
+
+    .contents_map .contents:active {
+        cursor: grabbing;
+    }
+
+    .map_area .position_info {
+        bottom: 40px;
+    }
+}

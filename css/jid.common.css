@@ -2661,6 +2661,14 @@ input:checked+.slider .label-off {
     overflow: hidden;
 }
 
+/* 희원 260811 css 추가 */
+.map_area .flex_division {
+    position: absolute;
+    z-index: 99999;
+    left: 50%;
+    transform: translate(-50%, 10px);
+}
+
 
 /* 희원 1210 */
 /* .d_2 {
