@@ -47,4 +47,13 @@
     .map_area .position_info {
         bottom: 40px;
     }
+
+
+    .leaflet-touch .leaflet-bar {
+        top: 40px;
+    }
+
+    .map_area .num_info {
+        top: 120px;
+    }
 }
