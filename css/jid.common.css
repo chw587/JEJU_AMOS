@@ -1487,7 +1487,7 @@ input:checked+.slider .label-off {
     /* max-height: calc(100% - 125px); */
 
     /* 희원 260811 (주석처리) */
-    /* overflow-y: hidden; */
+    overflow-y: hidden;
 }
 
 /* 희원 260811 css추가 */
