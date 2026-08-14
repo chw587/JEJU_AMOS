@@ -24,8 +24,8 @@
     <link rel="stylesheet" href="css/light.css" type="text/css" />
 
     <!-- 희원 260731 -->
-     <link rel="stylesheet" href="./css/m_Responsive.css">
-     <script src="./js/m_Responsive.js" defer></script>
+    <link rel="stylesheet" href="./css/m_Responsive.css">
+    <script src="./js/m_Responsive.js" defer></script>
 
     <!-- 1208 -->
     <link rel="stylesheet" href="./css/responsive.css">
@@ -367,60 +367,55 @@
                         <!-- 2D 지도 -->
                         <article class="map_area d_2" id="aLeft">
 
-                            <!-- 희원260811 (select 화면 추가) -->
-                             <div class="flex_division">
-                                        <details class="details_list" id="dDispItems">
-                                            <summary>표출항목</summary>
-                                            <ul>
-                                                <li>
-                                                    <input type="checkbox" id="cWpr" class="chk_display_item" checked />
-                                                    <label for="cWpr">Wind Profiler</label>
-                                                </li>
-                                                <li>
-                                                    <input type="checkbox" id="cLlwas" class="chk_display_item"
-                                                        checked />
-                                                    <label for="cLlwas">LLWAS</label>
-                                                </li>
-                                                <li>
-                                                    <input type="checkbox" id="cAmos" class="chk_display_item"
-                                                        checked />
-                                                    <label for="cAmos">AMOS</label>
-                                                </li>
-                                                <li>
-                                                    <input type="checkbox" id="cMap" class="chk_display_item" checked />
-                                                    <label for="cMap">지도</label>
-                                                </li>
-                                                <li>
-                                                    <input type="checkbox" id="cArena" class="chk_display_item"
-                                                        checked />
-                                                    <label for="cArena">Arena</label>
-                                                </li>
-                                                <li>
-                                                    <input type="checkbox" id="cFlyRoute" class="chk_display_item"
-                                                        checked />
-                                                    <label for="cFlyRoute">항로</label>
-                                                </li>
-                                                <li>
-                                                    <input type="checkbox" id="cObsCircle" class="chk_display_item"
-                                                        checked />
-                                                    <label for="cObsCircle">관측반경</label>
-                                                </li>
-                                            </ul>
-                                        </details>
-                                        <select id="sProduct">
-                                            <option value="">Product</option>
-                                            <!-- option value="tdwr1">TDWR:반사도</option>
+                            <!-- 희원260811 (select 화면 위치 변경) -->
+                            <div class="flex_division">
+                                <details class="details_list" id="dDispItems">
+                                    <summary>표출항목</summary>
+                                    <ul>
+                                        <li>
+                                            <input type="checkbox" id="cWpr" class="chk_display_item" checked />
+                                            <label for="cWpr">Wind Profiler</label>
+                                        </li>
+                                        <li>
+                                            <input type="checkbox" id="cLlwas" class="chk_display_item" checked />
+                                            <label for="cLlwas">LLWAS</label>
+                                        </li>
+                                        <li>
+                                            <input type="checkbox" id="cAmos" class="chk_display_item" checked />
+                                            <label for="cAmos">AMOS</label>
+                                        </li>
+                                        <li>
+                                            <input type="checkbox" id="cMap" class="chk_display_item" checked />
+                                            <label for="cMap">지도</label>
+                                        </li>
+                                        <li>
+                                            <input type="checkbox" id="cArena" class="chk_display_item" checked />
+                                            <label for="cArena">Arena</label>
+                                        </li>
+                                        <li>
+                                            <input type="checkbox" id="cFlyRoute" class="chk_display_item" checked />
+                                            <label for="cFlyRoute">항로</label>
+                                        </li>
+                                        <li>
+                                            <input type="checkbox" id="cObsCircle" class="chk_display_item" checked />
+                                            <label for="cObsCircle">관측반경</label>
+                                        </li>
+                                    </ul>
+                                </details>
+                                <select id="sProduct">
+                                    <option value="">Product</option>
+                                    <!-- option value="tdwr1">TDWR:반사도</option>
                                 <option value="tdwr2">TDWR:시선속도</option>
                                 <option value="tdwr3">TDWR:수상체</option -->
-                                            <option value="tldr11">TLDR1:SNR</option>
-                                            <option value="tldr12">TLDR1:시선속도</option>
-                                            <option value="tldr21">TLDR2:SNR</option>
-                                            <option value="tldr22">TLDR2:시선속도</option>
-                                        </select>
-                                        <select id="sWind">
-                                            <option value="">Wind</option>
-                                        </select>
-                                    </div>
+                                    <option value="tldr11">TLDR1:SNR</option>
+                                    <option value="tldr12">TLDR1:시선속도</option>
+                                    <option value="tldr21">TLDR2:SNR</option>
+                                    <option value="tldr22">TLDR2:시선속도</option>
+                                </select>
+                                <select id="sWind">
+                                    <option value="">Wind</option>
+                                </select>
+                            </div>
 
                             <div id="dMap"></div>
 
@@ -508,13 +503,13 @@
 
                             <article class="real_time_area">
                                 <div class="info_group">
-                                    
+
 
                                     <!-- 희원 260811 -->
                                     <header class="header_content" style="border: none;">
                                         <div class="tit tit_graphic" id="fHeader">
                                             <h1>제목입니다</h1>
-                                            
+
                                             <button class="on">ALM <span>ON</span></button>
                                         </div>
 
@@ -529,7 +524,7 @@
                                             <li>풍속</li>
                                         </ul>
                                         <!-- 희원 260811 (리스트 추가-) -->
-                                        <ul class="rwy_info"  id="fHeader">
+                                        <ul class="rwy_info" id="fHeader">
                                             <li>CF</li>
                                             <li></li>
                                             <li></li>

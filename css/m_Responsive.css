@@ -33,7 +33,7 @@
         margin: 0 !important;
         border-radius: 32px 32px 0 0 !important;
         box-shadow: 0 -7px 20px rgba(0, 0, 0, 0.05) !important;
-        padding: 40px 20px 60px 20px !important;
+        padding: 30px 20px 20px 20px !important;
         transition: bottom .3s ease;
 
         touch-action: none;
@@ -48,6 +48,10 @@
         bottom: 40px;
     }
 
+    .map_area .flex_division {
+        width: 95%;
+    }
+
 
     .leaflet-touch .leaflet-bar {
         top: 40px;
@@ -55,5 +59,89 @@
 
     .map_area .num_info {
         top: 120px;
+    }
+
+    #btnRightShow {
+        display: none;
+    }
+
+
+    /* INDEX */
+    .index .container .main_content {
+        margin: 0 20px 30px 20px !important;
+    }
+
+    .real_num .rwy_title {
+        height: 35px;
+    }
+
+    /* FEED */
+    .feed .main_content {
+        margin: 0 !important;
+        overflow-x: auto !important;
+    }
+
+    .feed .airstrip {
+        justify-content: start;
+        gap: 12px;
+    }
+
+    .airstrip_detail .tit,
+    .rwy_list .tit span {
+        font-size: 14px !important;
+    }
+
+    .feed .contents {
+        display: none;
+        position: absolute !important;
+        width: 100% !important;
+        bottom: 0;
+        margin: 0 !important;
+        border-radius: 32px 32px 0 0 !important;
+        box-shadow: 0 -7px 20px rgba(0, 0, 0, 0.05) !important;
+        padding: 30px 20px 20px 20px !important;
+        transition: bottom .3s ease;
+        touch-action: none;
+        cursor: grab;
+
+        background-color: pink !important;
+    }
+
+    .feed .main_content {
+        border-radius: 0;
+        margin: 0;
+    }
+
+    .wpr_area {
+        display: none !important;
+    }
+
+    .airship_graph {
+        padding-right: 20px !important;
+    }
+
+    .rwy_list,
+    .box_airstrip {
+        width : 145px !important;
+    }
+
+    .airstrip_list>li,
+    .r_list>ul>li {
+            width: 70px !important;
+    }
+
+    .airstrip_list>li,
+    .height_area>ul>li {
+        height: 80px !important;
+    }
+
+    .tooltip_wrap {
+        DISPLAY: NONE;
+    }
+}
+
+@media (max-width: 1024px) {
+    .info_area {
+        border-radius: 15px !important;
     }
 }

@@ -91,7 +91,8 @@ function f_initBtns() {
 
         // border-radius 강제 초기화
         $(".info_area").each(function () {
-            this.style.setProperty('border-radius', '0 15px 15px 0', 'important');
+            // 희원 260812 ( !important 제거 )
+            this.style.setProperty('border-radius', '0 15px 15px 0');
         });
     });
 

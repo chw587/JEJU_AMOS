@@ -59,9 +59,9 @@ function dragMove(e) {
 }
 
 
-function dragEnd(){
+function dragEnd() {
 
-    if(!isDragging) return;
+    if (!isDragging) return;
 
     isDragging = false;
 
@@ -72,11 +72,11 @@ function dragEnd(){
 
 
     // 가까운 위치로 스냅
-    if(currentBottom < minBottom / 2){
+    if (currentBottom < minBottom / 2) {
 
         sheet.style.bottom = `${minBottom}px`;
 
-    }else{
+    } else {
 
         sheet.style.bottom = '0px';
 

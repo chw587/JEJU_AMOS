@@ -23,6 +23,10 @@
     <link rel="stylesheet" href="css/lib/jquery-ui.min.css" type="text/css" />
     <link rel="stylesheet" href="css/light.css" type="text/css" />
 
+    <!-- 희원 260731 -->
+    <link rel="stylesheet" href="./css/m_Responsive.css">
+    <script src="./js/m_Responsive.js" defer></script>
+
     <!-- 1205 -->
     <link rel="stylesheet" href="./css/responsive.css">
 
@@ -154,6 +158,17 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
+
+            /* 희원 260813 CSS 추가 */
+            position: relative;
+            width: 45%;
+            margin: 15px 0 30px 0;
+            padding: 10px 20px;
+            padding-right: 0;
+            background-color: #2a2a2a;
+            position: relative;
+            border-radius: 15px 0 0 15px;
+            z-index: 403;
         }
 
 
@@ -249,6 +264,9 @@
                     <p class="title">제주국제공항 IWIS</p>
                 </a>
                 <div>
+                    <!-- 260814 희원 (통계 버튼 추가) -->
+                    <span class="round_tit count_page_bnt">통계</span>
+
                     <p class="runway">RUNWAY : <span id="sRwyMode">AUTO</span></p>
                     <select id="device_content">
                         <option value="total">통합</option>
@@ -949,111 +967,110 @@
                 </div>
 
                 <!-- right : 정보창 -->
-                <article class="contents" id="aRight"
-                    style="position: relative; width: 45%; margin: 15px 0 30px 0; padding: 10px 20px; padding-right: 0 ;background-color: #2a2a2a;position: relative;border-radius: 15px 0 0 15px;z-index: 403;">
+                <article class="contents" id="aRight">
                     <!-- 클릭시 정보창(contents에 class명 is_hidden 추가) 닫힘 / info_contents 에 class명 is_only 추가-->
                     <button type="button" class="btn_s btn_circle btn_darkb" id="btnRightHide" style="left : -40px;"><i
                             class="ico ico_s ico_close">close</i></button>
 
                     <article class="real_time_area">
-                                <div class="info_group">
-                                    
+                        <div class="info_group">
 
-                                    <!-- 희원 260811 -->
-                                    <header class="header_content" style="border: none;">
-                                        <div class="tit tit_graphic" id="fHeader">
-                                            <h1>제목입니다</h1>
-                                            
-                                            <button class="on">ALM <span>ON</span></button>
-                                        </div>
 
-                                    </header>
-                                    <article class="real_num type_s">
-                                        <ul class="rwy_title">
-                                            <li>활주로</li>
-                                            <li>WSA/MBA</li>
-                                            <li>LOSS/GAIN</li>
-                                            <li>위치</li>
-                                            <li>풍향</li>
-                                            <li>풍속</li>
-                                        </ul>
-                                        <!-- 희원 260811 (리스트 추가-) -->
-                                        <ul class="rwy_info"  id="fHeader">
-                                            <li>CF</li>
-                                            <li></li>
-                                            <li></li>
-                                            <li></li>
-                                            <li>350</li>
-                                            <li>17</li>
-                                        </ul>
+                            <!-- 희원 260811 -->
+                            <header class="header_content" style="border: none;">
+                                <div class="tit tit_graphic" id="fHeader">
+                                    <h1>제목입니다</h1>
 
-                                        <ul class="rwy_info">
-                                            <li>07A</li>
-                                            <li></li>
-                                            <li></li>
-                                            <li></li>
-                                            <li>340</li>
-                                            <li>4</li>
-                                        </ul>
-                                        <ul class="rwy_info alert">
-                                            <li>07A</li>
-                                            <li>WSA</li>
-                                            <li>RWY</li>
-                                            <li>15K+</li>
-                                            <li>340</li>
-                                            <li>15</li>
-                                        </ul>
-                                        <ul class="rwy_info alert">
-                                            <li>adg</li>
-                                            <li></li>
-                                            <li></li>
-                                            <li></li>
-                                            <li></li>
-                                            <li></li>
-                                        </ul>
-                                        <ul class="rwy_info alert">
-                                            <li>adg</li>
-                                            <li></li>
-                                            <li></li>
-                                            <li></li>
-                                            <li></li>
-                                            <li></li>
-                                        </ul>
-                                        <ul class="rwy_info alert">
-                                            <li>afg</li>
-                                            <li></li>
-                                            <li></li>
-                                            <li></li>
-                                            <li></li>
-                                            <li></li>
-                                        </ul>
-                                        <ul class="rwy_info alert">
-                                            <li>afg</li>
-                                            <li></li>
-                                            <li></li>
-                                            <li></li>
-                                            <li></li>
-                                            <li></li>
-                                        </ul>
-                                        <ul class="rwy_info  alert">
-                                            <li>afdg</li>
-                                            <li></li>
-                                            <li></li>
-                                            <li></li>
-                                            <li></li>
-                                            <li></li>
-                                        </ul>
-                                        <ul class="rwy_info alert">
-                                            <li>afg</li>
-                                            <li></li>
-                                            <li></li>
-                                            <li></li>
-                                            <li></li>
-                                            <li></li>
-                                        </ul>
-                                    </article>
+                                    <button class="on">ALM <span>ON</span></button>
                                 </div>
+
+                            </header>
+                            <article class="real_num type_s">
+                                <ul class="rwy_title">
+                                    <li>활주로</li>
+                                    <li>WSA/MBA</li>
+                                    <li>LOSS/GAIN</li>
+                                    <li>위치</li>
+                                    <li>풍향</li>
+                                    <li>풍속</li>
+                                </ul>
+                                <!-- 희원 260811 (리스트 추가-) -->
+                                <ul class="rwy_info" id="fHeader">
+                                    <li>CF</li>
+                                    <li></li>
+                                    <li></li>
+                                    <li></li>
+                                    <li>350</li>
+                                    <li>17</li>
+                                </ul>
+
+                                <ul class="rwy_info">
+                                    <li>07A</li>
+                                    <li></li>
+                                    <li></li>
+                                    <li></li>
+                                    <li>340</li>
+                                    <li>4</li>
+                                </ul>
+                                <ul class="rwy_info alert">
+                                    <li>07A</li>
+                                    <li>WSA</li>
+                                    <li>RWY</li>
+                                    <li>15K+</li>
+                                    <li>340</li>
+                                    <li>15</li>
+                                </ul>
+                                <ul class="rwy_info alert">
+                                    <li>adg</li>
+                                    <li></li>
+                                    <li></li>
+                                    <li></li>
+                                    <li></li>
+                                    <li></li>
+                                </ul>
+                                <ul class="rwy_info alert">
+                                    <li>adg</li>
+                                    <li></li>
+                                    <li></li>
+                                    <li></li>
+                                    <li></li>
+                                    <li></li>
+                                </ul>
+                                <ul class="rwy_info alert">
+                                    <li>afg</li>
+                                    <li></li>
+                                    <li></li>
+                                    <li></li>
+                                    <li></li>
+                                    <li></li>
+                                </ul>
+                                <ul class="rwy_info alert">
+                                    <li>afg</li>
+                                    <li></li>
+                                    <li></li>
+                                    <li></li>
+                                    <li></li>
+                                    <li></li>
+                                </ul>
+                                <ul class="rwy_info  alert">
+                                    <li>afdg</li>
+                                    <li></li>
+                                    <li></li>
+                                    <li></li>
+                                    <li></li>
+                                    <li></li>
+                                </ul>
+                                <ul class="rwy_info alert">
+                                    <li>afg</li>
+                                    <li></li>
+                                    <li></li>
+                                    <li></li>
+                                    <li></li>
+                                    <li></li>
+                                </ul>
                             </article>
+                        </div>
+                    </article>
 
                     <div class="bottom_area">
                         <p class="toggle_btn">
@@ -1155,7 +1172,7 @@
                 </article>
 
                 <!-- sidbar -->
-                <ul class="info_area" style="border-radius: 0 15px 15px 0;">
+                <ul class="info_area">
                     <button type="button" class="btn_s btn_circle page_open" id="btnRightShow" style="left: -40px;"><i
                             class="ico ico_m ico_open">open</i></button>
                     <!-- 클릭 시 정보창 오픈 -->
@@ -1209,9 +1226,9 @@
             <input type="hidden" id="iAtcpdIsUtc" value="Y" />
             <input type="hidden" id="iWpIsUtc" value="Y" />
             <input type="hidden" id="iRadarIsUtc" value="Y" />
-            <div class="modal" id="dError">
+            <!-- <div class="modal" id="dError">
                 <p class="box_error">서버통신실패</p>
-            </div>
+            </div> -->
             <button type="button" class="btn btn_view btn_green" value="combined" style="display:none;">통합</button>
 
 
