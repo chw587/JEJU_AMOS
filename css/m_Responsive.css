@@ -106,6 +106,10 @@
         touch-action: none;
         cursor: grab;
     }
+    .feed .real_time {
+        height: 100vh;
+        overflow: hidden;
+    }
 
     .feed .main_content {
         border-radius: 0;
