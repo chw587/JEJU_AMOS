@@ -1,4 +1,4 @@
-const sheet = document.querySelector('.contents_map .contents');
+const sheet = document.querySelector('.contents');
 
 let startY = 0;
 let startBottom = 0;

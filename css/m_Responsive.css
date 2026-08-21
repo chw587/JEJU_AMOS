@@ -32,6 +32,7 @@
         bottom: -93%;
         margin: 0 !important;
         border-radius: 32px 32px 0 0 !important;
+        border-top: 1px solid #ddd;
         box-shadow: 0 -7px 20px rgba(0, 0, 0, 0.05) !important;
         padding: 30px 20px 20px 20px !important;
         transition: bottom .3s ease;
@@ -92,19 +93,18 @@
     }
 
     .feed .contents {
-        display: none;
+        /* display: none; */
         position: absolute !important;
         width: 100% !important;
-        bottom: 0;
+        bottom: -74%;
         margin: 0 !important;
         border-radius: 32px 32px 0 0 !important;
+        border-top: 1px solid #ddd;
         box-shadow: 0 -7px 20px rgba(0, 0, 0, 0.05) !important;
         padding: 30px 20px 20px 20px !important;
         transition: bottom .3s ease;
         touch-action: none;
         cursor: grab;
-
-        background-color: pink !important;
     }
 
     .feed .main_content {
@@ -122,21 +122,27 @@
 
     .rwy_list,
     .box_airstrip {
-        width : 145px !important;
+        width: 125px !important;
     }
 
     .airstrip_list>li,
     .r_list>ul>li {
-            width: 70px !important;
+        width: 60px !important;
     }
 
     .airstrip_list>li,
     .height_area>ul>li {
-        height: 80px !important;
+        height: 70px !important;
     }
 
     .tooltip_wrap {
         DISPLAY: NONE;
+    }
+
+    /* 260821 희원 */
+    .round_tit {
+        width: 100% !important;
+        padding: 0 10px !important;
     }
 }
 
