@@ -460,10 +460,6 @@
     .box_airstrip {
         height: 75px;
     }
-
-    .tooltip_wrap {
-        bottom: -440px;
-    }
 }
 
 @media screen and (max-height: 810px) {
@@ -473,10 +469,6 @@
     .box_airstrip {
         height: 70px;
     }
-
-    .tooltip_wrap {
-        bottom: -420px;
-    }
 }
 
 @media screen and (max-height: 790px) {
@@ -484,20 +476,6 @@
     .airstrip_list>li,
     .height_area>ul>li {
         height: 65px;
-    }
-
-    /* article.real_num.type_s {
-        font-size: 22px !important;
-    } */
-
-    .tooltip_wrap {
-        bottom: -400px;
-    }
-}
-
-@media screen and (max-height: 770px) {
-    .tooltip_wrap {
-        bottom: -380px;
     }
 }
 
@@ -513,11 +491,6 @@
     .plumb_map {
         margin: 15px;
         overflow-y: scroll;
-    }
-
-    .tooltip_wrap {
-        left: -60px;
-        bottom: -440px;
     }
 
     .r_area {

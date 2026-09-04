@@ -1,8 +1,17 @@
-/* Mobile */
-@media (min-width: 576px) {}
+/* ============================================================
+   Mobile (>= 576px)
+   ============================================================ */
+@media (min-width: 576px) {
+    /* 향후 모바일 전용 스타일 추가 예정 */
+}
 
-/* Tablet */
+
+/* ============================================================
+   Tablet (<= 768px)
+   ============================================================ */
 @media (max-width: 768px) {
+
+    /* ---------- Header ---------- */
     .header {
         padding: 10px 20px;
     }
@@ -16,29 +25,62 @@
         font-size: 30px !important;
     }
 
+    .header_content {
+        display: none;
+    }
+
+    /* ---------- Common / Info area ---------- */
     .info_area {
-        border-radius: 15px !important;
+        margin: 0 16px 10px 16px !important;
         padding: 8px !important;
-        margin: 0 20px 10px 20px !important;
+        border-radius: 15px !important;
+    }
+
+    #btnRightShow {
+        display: none;
+    }
+
+    /* ---------- Index page ---------- */
+    .index .container .main_content {
+        margin: 0 16px 30px 16px !important;
+    }
+
+    .real_num {
+        height: 100% !important;
+    }
+
+    .real_num .rwy_title {
+        height: 35px;
+    }
+
+    /* ---------- Graph / Real-time page ---------- */
+    .graph .real_time .container {
+        height: 100% !important;
     }
 
     .contents_map {
         position: relative !important;
     }
 
-    .contents_map .contents {
+    .graph .real_time .contents_map .contents {
         position: absolute !important;
+        bottom: -75%;
         width: 100% !important;
-        bottom: -93%;
+        height: auto;
         margin: 0 !important;
-        border-radius: 32px 32px 0 0 !important;
-        border-top: 1px solid #ddd;
-        box-shadow: 0 -7px 20px rgba(0, 0, 0, 0.05) !important;
         padding: 30px 20px 20px 20px !important;
-        transition: bottom .3s ease;
-
+        display: flex;
+        flex-direction: column !important;
+        border-top: 1px solid #ddd;
+        border-radius: 32px 32px 0 0 !important;
+        box-shadow: 0 -7px 20px rgba(0, 0, 0, 0.05) !important;
         touch-action: none;
         cursor: grab;
+        transition: bottom .3s ease;
+    }
+
+    .graph .real_time .contents_map .contents>* {
+        width: 100% !important;
     }
 
     .contents_map .contents:active {
@@ -53,33 +95,36 @@
         width: 95%;
     }
 
+    .map_area .num_info {
+        top: 120px;
+    }
 
     .leaflet-touch .leaflet-bar {
         top: 40px;
     }
 
-    .map_area .num_info {
-        top: 120px;
+    .airship_graph {
+        padding-right: 20px !important;
     }
 
-    #btnRightShow {
+    .wpr_area {
+        display: none !important;
+    }
+
+    .edr_graph {
         display: none;
     }
 
-
-    /* INDEX */
-    .index .container .main_content {
-        margin: 0 20px 30px 20px !important;
+    .plumb_map .tooltip_wrap {
+        left: -20px;
+        bottom: -720px;
     }
 
-    .real_num .rwy_title {
-        height: 35px;
-    }
-
-    /* FEED */
+    /* ---------- Feed page ---------- */
     .feed .main_content {
         margin: 0 !important;
         overflow-x: auto !important;
+        border-radius: 0;
     }
 
     .feed .airstrip {
@@ -87,51 +132,169 @@
         gap: 12px;
     }
 
-    .airstrip_detail .tit,
-    .rwy_list .tit span {
-        font-size: 14px !important;
-    }
-
-    .feed .contents {
-        /* display: none; */
-        position: absolute !important;
-        width: 100% !important;
-        bottom: -74%;
-        margin: 0 !important;
-        border-radius: 32px 32px 0 0 !important;
-        border-top: 1px solid #ddd;
-        box-shadow: 0 -7px 20px rgba(0, 0, 0, 0.05) !important;
-        padding: 30px 20px 20px 20px !important;
-        transition: bottom .3s ease;
-        touch-action: none;
-        cursor: grab;
-    }
     .feed .real_time {
         height: 100vh;
         overflow: hidden;
     }
 
-    .feed .main_content {
-        border-radius: 0;
-        margin: 0;
+    .feed .contents {
+        position: absolute !important;
+    bottom: -65%;
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 30px 20px 20px 20px !important;
+        display: flex;
+        flex-direction: column !important;
+        border-top: 1px solid #ddd;
+        border-radius: 32px 32px 0 0 !important;
+        box-shadow: 0 -7px 20px rgba(0, 0, 0, 0.05) !important;
+        touch-action: none;
+        cursor: grab;
+        transition: bottom .3s ease;
+
     }
 
-    .wpr_area {
+    .feed #aRight .real_time_area,
+    .feed #aRight .bottom_area {
+        width: 100% !important;
+    }
+
+    .airstrip_detail .tit,
+    .rwy_list .tit span {
+        font-size: 14px !important;
+    }
+
+    .round_tit {
+        width: 100% !important;
+        padding: 0 10px !important;
+    }
+}
+
+
+/* ============================================================
+   Small desktop / Laptop (<= 1024px)
+   ============================================================ */
+@media (max-width: 1024px) {
+
+    /* ---------- Header / Common ---------- */
+    .header_content {
+        display: none;
+    }
+
+    .info_area {
+        border-radius: 15px !important;
+    }
+
+    .info_group {
+        height: auto;
+    }
+
+    .toggle_btn {
         display: none !important;
     }
 
-    .airship_graph {
-        padding-right: 20px !important;
+    .btn_darkb,
+    .page_open {
+        display: none !important;
     }
 
+    .height_area {
+        display: none !important;
+    }
+
+    .tooltip_wrap {
+        left: -30px;
+        bottom: -440px;
+    }
+
+    .mba span,
+    .wsa span {
+        display: none;
+    }
+
+    /* ---------- Graph page ---------- */
+    .graph .container {
+        height: auto !important;
+    }
+
+    .graph .contents_map {
+        flex-direction: column !important;
+    }
+
+    .graph .map_area {
+        width: 100%;
+        min-height: 320px;
+    }
+
+    .graph .contents_map .contents {
+        width: auto !important;
+        flex-direction: initial !important;
+        margin: 10px 30px;
+        padding: 20px;
+        border-radius: 15px !important;
+    }
+
+    .graph .contents_map .contents>* {
+        width: 50% !important;
+    }
+
+    /* ---------- Feed page ---------- */
+    .feed .container {
+        flex-direction: column;
+    }
+
+    .feed .container .main_content {
+        height: auto;
+    }
+
+    .feed .info_area {
+        order: 1;
+    }
+
+    .feed #aLeft {
+        order: 2;
+        margin: 0 30px 10px 30px;
+    }
+
+    .feed #aLeft .plumb_map {
+        overflow-y: auto;
+    }
+
+    .feed #aRight {
+        order: 3;
+        flex-direction: initial;
+    }
+
+    .feed #aRight .real_time_area,
+    .feed #aRight .bottom_area {
+        width: 50%;
+        height: auto;
+    }
+
+    .feed .contents {
+        width: auto !important;
+        margin: 0 30px 30px 30px;
+        padding: 10px 20px;
+        border-radius: 15px;
+    }
+
+    .feed .toggle {
+        width: 80px;
+    }
+
+    .feed .slider:before {
+        width: 40px;
+    }
+
+    /* ---------- Runway / airstrip lists ---------- */
     .rwy_list,
     .box_airstrip {
-        width: 125px !important;
+        width: 134px !important;
     }
 
     .airstrip_list>li,
     .r_list>ul>li {
-        width: 60px !important;
+        width: 65px !important;
     }
 
     .airstrip_list>li,
@@ -139,19 +302,30 @@
         height: 70px !important;
     }
 
-    .tooltip_wrap {
-        DISPLAY: NONE;
+    .edr_graph .graph_list>ul>li>span {
+        width: fit-content;
     }
 
-    /* 260821 희원 */
-    .round_tit {
-        width: 100% !important;
-        padding: 0 10px !important;
+    /* ---------- wind_profiler ---------- */
+    .bottom_area {
+        display: flex;
+    flex-direction: column;
+    justify-content: space-between;
     }
-}
 
-@media (max-width: 1024px) {
-    .info_area {
-        border-radius: 15px !important;
+    .bottom_area .listT {
+        height: 85%;
+    }
+
+    .bottom_area .listT thead {
+        height: 20%;
+    } 
+
+    .bottom_area .listT tbody {
+        height: 80%;
+    } 
+
+    .bottom_area .listT td {
+        height: calc(100% / 6) !important;
     }
 }
